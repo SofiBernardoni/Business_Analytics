@@ -11,8 +11,49 @@ classdef EventManager < handle
             %obj.currentEventHandler = @(,) disp('Nessun handler evento impostato');
         %end
 
+        function [state,fail] = checkAdmission(~,entity,state, config)
+            fail=true;
+            if config.preference
+                comp_servers= compatible_servers(entity.preference);
+            else
+                comp_servers= [1:numServers];
+            end
         
-        function [state, newEvent]= handleArrival(state, event, config)
+            for ser = comp_servers
+                if state.servers(ser) == 0
+                    fail= false; % the entity can access servers
+                    break;
+                end
+            end
+        end
+
+        function [state, newEvent] = enterService(~,entity,state)
+        
+            if config.preference
+                comp_servers= compatible_servers(entity.preference);
+            else
+                comp_servers= [1:numServers];
+            end
+           
+            for s=comp_servers
+                if state.servers(s)==0
+                    break;
+                end
+            end
+            
+            state.queue(1)=[]; % exiting the queue
+        
+            state.servers(s)=1; % server not avavilable anymore
+            serviceTime = exprnd(config.serviceMean); % see extension
+            newEvent = scheduleEvent(state.time + serviceTime, 'fine_servizio', struct('server', s));
+        
+        end
+
+        function [state] = exitService(~,entity,state) % mettere come metodo astratto??
+        end
+        
+        
+        function [state, newEvent]= handleArrival(~,state, event, config)
             
             enterSystem= true;
             if config.balking
@@ -39,10 +80,10 @@ classdef EventManager < handle
                 enterQueue= true;
                 if state.lengthQueue==0
                     % Check servers
-                    [state,fail] = checkAdmission(newEntity,state, config); % fail=true if not admitted %%%%%%%% DEFINE con evento service time simulato
+                    [state,fail] = obj.checkAdmission(newEntity,state, config); % fail=true if not admitted %%%%%%%% DEFINE con evento service time simulato
                     enterQueue=fail;
                     if ~fail
-                        state = enterService(entity,state);
+                        state = obj.enterService(entity,state);
                     end
                 end
                
@@ -59,31 +100,24 @@ classdef EventManager < handle
 
         end
 
-        function [state, newEvent]= handleEndService(state, event, config)
+        function [state, newEvent]= handleEndService(~,state, event, config)
             state.servers(event.server)= 0; %server again available
             if state.lengthQueue>0
                 newEntity= state.queue{1} ; % first entity in the queue
-                [state,fail] = checkAdmission(newEntity,state, config); % fail=true if not admitted 
+                [state,fail] = obj.checkAdmission(newEntity,state, config); % fail=true if not admitted 
                 if ~fail
-                    [state, newEvent] = enterService(entity,state);
+                    [state, newEvent] = obj.enterService(entity,state);
                 end
             else % empty queue
                 newEvent=[];
             end
+
+            state= obj.exitService(entity,state); % da definire meglio..
 
         end
 
-        function [state, newEvent]= handleInternalQueue(state, event, config)
-            state.servers(event.server)= 0; %server again available
-            if state.lengthQueue>0
-                newEntity= state.queue{1} ; % first entity in the queue
-                [state,fail] = checkAdmission(newEntity,state, config); % fail=true if not admitted 
-                if ~fail
-                    [state, newEvent] = enterService(entity,state);
-                end
-            else % empty queue
-                newEvent=[];
-            end
+        function [state, newEvent]= handleInternalQueue(~, state, event, config)
+            % boh
 
         end
 
