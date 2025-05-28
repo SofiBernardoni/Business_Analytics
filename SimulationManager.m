@@ -39,12 +39,14 @@ classdef SimulationManager < handle
                 state.clock=event.clock;
                 
                 % Manage the event
-                handle_fun= EventMgr.handleEvent(event.type);
-                [state, newEvent, newEventGenerated]=handle_fun(state, event, config);
-                if newEventGenerated
-                    state.list_events = EventUtils.insertEvents(state.list_events, newEvent);
+                handle_fun= obj.EventMgr.handleEvent(event.type);
+                [state, newEvent]=handle_fun(state, event, config);
+                for e=newEvent
+                    state.list_events = EventUtils.insertEvents(state.list_events, e); 
                 end
                 state = obj.StatMgr.update(state,event); % vedi bene
+
+                
 
             
                 % da inserire in uscita client: count = count+ 1;

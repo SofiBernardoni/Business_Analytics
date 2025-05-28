@@ -1,17 +1,18 @@
 classdef EventManager < handle
     % Class to manage simulation process (simulazione ad eventi)
     properties
-        currentEvent @function_handle
+        %currentEvent @function_handle
     end
     
     methods
-        function obj = EventManager()
+        %function obj = EventManager()
             % Class constructor
             % Initializing to a null default
-            obj.currentEventHandler = @(,) disp('Nessun handler evento impostato');
-        end
+            %obj.currentEventHandler = @(,) disp('Nessun handler evento impostato');
+        %end
 
-        function [state, newEvent,newEventGenerated]= handleArrival(state, event, config)
+        
+        function [state, newEvent]= handleArrival(state, event, config)
             
             enterSystem= true;
             if config.balking
@@ -38,8 +39,11 @@ classdef EventManager < handle
                 enterQueue= true;
                 if state.lengthQueue==0
                     % Check servers
-                    [state,fail] = checkAdmission(newEntity,state); % fail=true if not admitted %%%%%%%% DEFINE con evento service time simulato 
+                    [state,fail] = checkAdmission(newEntity,state, config); % fail=true if not admitted %%%%%%%% DEFINE con evento service time simulato
                     enterQueue=fail;
+                    if ~fail
+                        state = enterService(entity,state);
+                    end
                 end
                
                 if enterQueue
@@ -50,21 +54,18 @@ classdef EventManager < handle
             end
             
             % Simulate new arrival
-            interArrivalTime= exprnd(config.arrivalRate);
+            interArrivalTime= exprnd(config.arrivalRate); %  vedi se mettere distribuzione generica
             newEvent = scheduleEvent(state.clock + interArrivalTime, 'arrivo');
-            newEventGenerated= true;
 
         end
 
-        function [state, newEvent,newEventGenerated]= handleEndService(state, event, config)
-            state.servers(event.server)=0; %server again available
+        function [state, newEvent]= handleEndService(state, event, config)
+            state.servers(event.server)= 0; %server again available
             if state.lengthQueue>0
                 newEntity= state.queue{1} ; % first entity in the queue
-                [state,fail] = checkAdmission(newEntity,state); % fail=true if not admitted 
+                [state,fail] = checkAdmission(newEntity,state, config); % fail=true if not admitted 
                 if ~fail
-                    state.queue(1)=[];
-                    %serviceTime = exprnd(config.serviceMean);
-                    %newEvent = scheduleEvent(state.time + serviceTime, 'fine_servizio', struct('server', server));
+                    [state, newEvent] = enterService(entity,state);
                 end
             else % empty queue
                 newEvent=[];
@@ -72,13 +73,29 @@ classdef EventManager < handle
 
         end
 
-        function handleEvent(obj, eventType)
+        function [state, newEvent]= handleInternalQueue(state, event, config)
+            state.servers(event.server)= 0; %server again available
+            if state.lengthQueue>0
+                newEntity= state.queue{1} ; % first entity in the queue
+                [state,fail] = checkAdmission(newEntity,state, config); % fail=true if not admitted 
+                if ~fail
+                    [state, newEvent] = enterService(entity,state);
+                end
+            else % empty queue
+                newEvent=[];
+            end
+
+        end
+
+        function currentEvent= handleEvent(obj, eventType)
             % handleEvent takes the event type as an input argument
             switch eventType
                 case 'arrivo'
-                    obj.currentEvent= @obj.handleArrival; 
+                    currentEvent= @obj.handleArrival; 
                 case 'fine_servizio'
-                    obj.currentEvent= @obj.handleEndService; 
+                    currentEvent= @obj.handleEndService; 
+                case 'internal_queue'
+                    currentEvent= @obj.handleInternalQueue; 
                 otherwise
                     error('EventManager:UnknownEventType', 'Unknown event type: %s', eventType);
             end

@@ -4,6 +4,13 @@ classdef Config
         arrivalRate = 0.5;
         serviceRate = 0.6;
         numServers= 1;
+        balking= true;
+        maxLength= 5;
+        minBalking= 5;
+        preference= true;
+        minPref= 1;
+        maxPref= 2;
+
     end
 
     methods
