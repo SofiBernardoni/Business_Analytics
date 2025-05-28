@@ -1,0 +1,36 @@
+cosa abbiamo messo in state:
+- clock
+- list_events (future)
+- queue (={}) lista di entity
+- lengthQueue
+- lost_client (booleano, da rimettere a false)
+- lastLenghtUpdate (clock all'ultimo update ) (sumlenght)
+- servers
+
+Numeroserviti=conut-lost_client
+
+
+config
+- balking(booleano) True per max lunghezza
+- maxLenght (_queue )
+- minBalking (intero)
+- minPref (intero, incluso)
+- maxPref (intero, incluso)
+- preference (booleano)
+- arrivalrate
+- numServer
+- serviceRate
+- 
+
+
+
+entity:
+- tempo di arrivo
+- preferenza
+- pompa
+
+evento:
+- clock
+- typo
+- server
+- 
