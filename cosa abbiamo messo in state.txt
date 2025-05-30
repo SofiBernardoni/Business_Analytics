@@ -25,16 +25,15 @@ config
 - independentArrivalQueue
  
 
-entity:
-- tempo di arrivo
-- preferenza
-- pompa
-
 evento:
 - clock
 - typo
-<<<<<<< HEAD
 - server
 - queue (indice della coda)
 - server (cosa che cè solo nel caso di end service) 
+- client :
+    - tempo di arrivo
+     - preferenza
+     - pompa
+
 
