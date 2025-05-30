@@ -40,8 +40,8 @@ classdef SimulationManager < handle
                 
                 % Manage the event
                 handle_fun= obj.EventMgr.handleEvent(event.type);
-                [state, newEvent]=handle_fun(state, event, config);
-                for e=newEvent
+                [state, newEvents]=handle_fun(state, event, config);
+                for e=newEvents
                     state.list_events = EventUtils.insertEvents(state.list_events, e); 
                 end
                 state = obj.StatMgr.update(state,event); % vedi bene
