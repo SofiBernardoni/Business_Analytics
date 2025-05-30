@@ -6,6 +6,7 @@ cosa abbiamo messo in state:
 - lost_client (booleano, da rimettere a false)
 - lastLenghtUpdate (clock all'ultimo update ) (sumlenght)
 - servers : [A, B, C, D] mettiamo 0 e 1 se il server è libero o occutpato
+- waitingPump: vettore lungo 2 per A e C
 
 Numeroserviti=conut-lost_client
 
