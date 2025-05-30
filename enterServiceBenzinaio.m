@@ -1,11 +1,11 @@
-function [state, newEvent] = enterServiceBenzinaio(entity,state,config)
+function [state, newEvent] = enterServiceBenzinaio(entity,state, config)
 
 %%% da mettere a posto
 
     if config.preference
         comp_servers= compatible_servers(entity.preference);
     else
-        comp_servers= [1:numServers];
+        comp_servers= [1:config.numServers];
     end
    
     for s=comp_servers

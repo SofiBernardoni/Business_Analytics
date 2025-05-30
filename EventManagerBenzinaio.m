@@ -45,7 +45,8 @@ classdef EventManagerBenzinaio < EventManager
                     if state.waitingPump(client.pump/2)
                         newEvent = scheduleEvent(state.time + EPS, 'fine_servizio', 1); % DEFINE eps
                         newEvent.server=client.pump/2;
-                        %newEvent.client=client; %AGGIUSTAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                        %newEvent.client=client; %AGGIUSTAAAAA--> newEvent.client = state.queue{1}; % O il client corretto
+
                         newEvents{end+1}=newEvent;
                     end
                 end

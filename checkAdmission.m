@@ -1,4 +1,4 @@
-function [state,fail] = checkAdmission(entity,state, config)
+function [state,fail] = checkAdmission(entity,state)
     fail=true;
     if config.preference
         comp_servers= compatible_servers(entity.preference);
