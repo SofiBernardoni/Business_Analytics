@@ -6,6 +6,7 @@ cosa abbiamo messo in state:
 - lost_client (booleano, da rimettere a false)
 - lastLenghtUpdate (clock all'ultimo update ) (sumlenght)
 - servers : [A, B, C, D] mettiamo 0 e 1 se il server è libero o occutpato
+- waitingPump: vettore lungo 2 per A e C
 
 Numeroserviti=conut-lost_client
 
@@ -20,9 +21,9 @@ config
 - arrivalrate
 - numServer
 - serviceRate
-- 
-
-
+- independentServiceQueue (vettore di booleani che dice se è indipendenti o no se true schedula il nuovo evento)
+- independentArrivalQueue
+ 
 
 entity:
 - tempo di arrivo
@@ -32,4 +33,8 @@ entity:
 evento:
 - clock
 - typo
+<<<<<<< HEAD
+- server
+- queue (indice della coda)
 - server (cosa che cè solo nel caso di end service) 
+
