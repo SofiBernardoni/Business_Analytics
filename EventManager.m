@@ -5,10 +5,11 @@ classdef EventManager < handle
     end
 
    methods (Abstract)
-        % Function that associates compatible servers to the preference (has to be defined when config.preference=true)
-        comp_servers= compatible_servers(~,pref); 
-        
-        state = exitService(~,entity,state);
+       
+        comp_servers= access_compatible_servers(~,pref);  % Function that associates compatible servers (allowing the access to the client) to the preference (has to be defined when config.preference=true)
+        comp_servers= compatible_servers(~,pref);  % Function that associates compatible servers to the preference (has to be defined when config.preference=true)
+        newEvent= dependentService(~,time,server,entity,id_queue); % Function that stores an event different from 'fine_servizio' on the queue(has to be defined when config.independentServiceQueue=false) 
+        state = exitService(~,state,event); % Function called after 'fine_servizio' on the queue when sth else follows  (has to be defined when config.independentExitQueue=false) 
     end
     
     methods
@@ -18,10 +19,10 @@ classdef EventManager < handle
             %obj.currentEventHandler = @(,) disp('Nessun handler evento impostato');
         %end
 
-        function [state,fail] = checkAdmission(~,entity,state, config)
+        function [state,fail] = checkAdmission(obj,entity,state, config)
             fail=true;
             if config.preference
-                comp_servers= obj.compatible_servers(entity.preference);
+                comp_servers= obj.access_compatible_servers(entity.preference);
             else
                 comp_servers= [1:numServers];
             end
@@ -34,10 +35,10 @@ classdef EventManager < handle
             end
         end
 
-        function [state, newEvent] = enterService(~,entity,state, id_queue, config)
+        function [state, newEvent] = enterService(obj,entity,state, id_queue, config)
         
             if config.preference
-                comp_servers= compatible_servers(entity.preference);
+                comp_servers= obj.compatible_servers(entity.preference);
             else
                 comp_servers= [1:numServers];
             end
@@ -48,7 +49,8 @@ classdef EventManager < handle
                 end
             end
             
-            state.queue(1)=[]; % exiting the queue
+            ent=state.queue{1}; %  METTERE IN  STATE.SERVERENTITY PER STATISTICHEEEEE
+            state.queue(1)=[];  % exiting the queue
         
             state.servers(s)=1; % server not avavilable anymore
             serviceTime = exprnd(config.serviceMean); % see extension
@@ -56,15 +58,12 @@ classdef EventManager < handle
             if config.independentServiceQueue(id_queue)
                newEvent = scheduleEvent(state.time + serviceTime, 'fine_servizio', id_queue);
                newEvent.server=s;
+               newEvent.client=ent;
+            else
+               newEvent= obj.dependentService(state.time + serviceTime,s,ent,id_queue); % metti in metodi astratti
             end
 
-            % vedi se tenere %%%%%%%%%%%%%%%%
-            if ~ config.independentServiceQueue(id_queue)
-                ev=struct('type',event.type,'queue',event.queue); %%%%% importare event se fai cosi (id_queue=event.queue)
-                idEv=find(config.orderEvents==ev);
-                nextEv=config.orderEvents(idEv+1);
-            end
-            % fine %%%%%%%%%%%%%%%%%%%%%%%
+
         
         end
 
@@ -88,21 +87,24 @@ classdef EventManager < handle
             
             if enterSystem
                 
-                % Creating new entity
-                newEntity=struct('timeArrival',state.clock);
-                if config.preference
-                    pref=randi([config.MinPref config.MaxPref]); % randomly samples the integer preference between config.MinPref and config.MaxPref included
-                    newEntity.preference= pref;
+                if config.independentArrivalQueue(event.queue) % Creating new entity if the queue has independent arrivals
+                    newEntity=struct('timeArrival',state.clock);
+                    if config.preference
+                        pref=randi([config.MinPref config.MaxPref]); % randomly samples the integer preference between config.MinPref and config.MaxPref included
+                        newEntity.preference= pref;
+                    end
+                else % Reading the client if the arrival is NOT independent
+                    newEntity = event.client;
                 end
-                
+                                
                 enterQueue= true;
                 if state.lengthQueue==0
-                    % Check servers
+                    % Check servers 
                     [state,fail] = obj.checkAdmission(newEntity,state, config); % fail=true if not admitted %%%%%%%% DEFINE con evento service time simulato
                     enterQueue=fail;
                     if ~fail
                         [state,newEvent] = obj.enterService(entity,state,event.queue, config);
-                        newEvents(end+1)=newEvent;
+                        newEvents{end+1}=newEvent;
                     end
                 end
                
@@ -117,7 +119,7 @@ classdef EventManager < handle
             if config.independentArrivalQueue(event.queue)
                 interArrivalTime= exprnd(config.arrivalRate); %  vedi se mettere distribuzione generica
                 newEvent = scheduleEvent(state.clock + interArrivalTime, 'arrivo', event.queue);
-                newEvents(end+1)=newEvent;
+                newEvents{end+1}=newEvent;
             end
 
         end
@@ -125,17 +127,21 @@ classdef EventManager < handle
         function [state, newEvents]= handleEndService(~,state, event, config)
             newEvents={};
             state.servers(event.server)= 0; %server again available
-            if state.lengthQueue>0
+            fail= false;
+            while state.lengthQueue>0 && ~fail
                 newEntity= state.queue{1} ; % first entity in the queue
                 [state,fail] = obj.checkAdmission(newEntity,state, config); % fail=true if not admitted 
                 if ~fail
-                    [state, newEvents] = obj.enterService(entity,state,event.queue, config);
-                    newEvents(end+1)=newEvents;
+                    [state, newEvents] = obj.enterService(newEntity,state,event.queue, config);
+                    newEvents{end+1}=newEvents;
                 end
             end
 
-            state= obj.exitService(entity,state); % da definire meglio..
-
+            if ~config.independentExitQueue(event.queue)
+                [state, new_events]= obj.exitService(state,event);
+                newEvents= [newEvents new_events]; % adding new events to the list
+            end
+            
         end
 
 
