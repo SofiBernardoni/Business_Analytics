@@ -1,4 +1,4 @@
-function [state, newEvent] = enterServiceBenzinaio(entity,state)
+function [state, newEvent] = enterServiceBenzinaio(entity,state,config)
 
 %%% da mettere a posto
 

@@ -20,9 +20,9 @@ config
 - arrivalrate
 - numServer
 - serviceRate
-- 
-
-
+- independentServiceQueue (vettore di booleani che dice se è indipendenti o no se true schedula il nuovo evento)
+- independentArrivalQueue
+ 
 
 entity:
 - tempo di arrivo
@@ -33,4 +33,4 @@ evento:
 - clock
 - typo
 - server
-- 
+- queue (indice della coda)

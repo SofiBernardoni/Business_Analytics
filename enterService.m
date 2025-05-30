@@ -1,4 +1,4 @@
-function [state, newEvent] = enterService(entity,state)
+function [state, newEvent] = enterService(entity,state,config)
 
     if config.preference
         comp_servers= compatible_servers(entity.preference);
