@@ -5,7 +5,7 @@ cosa abbiamo messo in state:
 - lengthQueue
 - lost_client (booleano, da rimettere a false)
 - lastLenghtUpdate (clock all'ultimo update ) (sumlenght)
-- servers
+- servers : [A, B, C, D] mettiamo 0 e 1 se il server è libero o occutpato
 
 Numeroserviti=conut-lost_client
 
@@ -32,5 +32,8 @@ entity:
 evento:
 - clock
 - typo
+<<<<<<< HEAD
 - server
 - queue (indice della coda)
+- server (cosa che cè solo nel caso di end service) 
+
