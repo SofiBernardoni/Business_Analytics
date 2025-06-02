@@ -56,11 +56,11 @@ classdef EventManager < handle
             serviceTime = exprnd(config.serviceMean); % see extension
             % Simulate new end_service on the queue if it's independent
             if config.independentServiceQueue(id_queue)
-               newEvent = scheduleEvent(state.time + serviceTime, 'fine_servizio', id_queue);
+               newEvent = scheduleEvent(state.clock + serviceTime, 'fine_servizio', id_queue);
                newEvent.server=s;
                newEvent.client=ent;
             else
-               newEvent= obj.dependentService(state.time + serviceTime,s,ent,id_queue); % metti in metodi astratti
+               newEvent= obj.dependentService(state.clock + serviceTime,s,ent,id_queue); % metti in metodi astratti
             end
 
 

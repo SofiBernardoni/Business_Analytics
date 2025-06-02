@@ -37,13 +37,13 @@ classdef EventManagerBenzinaio < EventManager
             end
             if entity_exits
                 % Scheduling end of service
-                newEvent = scheduleEvent(state.time, 'fine_servizio', 1);
+                newEvent = scheduleEvent(state.clock, 'fine_servizio', 1);
                 newEvent.server=client.pump;
                 newEvent.client=client;
                 newEvents{end+1}=newEvent;
                 if client.pump==2 || event.client.pump==4 % if driver in B or D, check if the driver behind is waiting
                     if state.waitingPump(client.pump/2)
-                        newEvent = scheduleEvent(state.time + EPS, 'fine_servizio', 1); % DEFINE eps
+                        newEvent = scheduleEvent(state.clock + EPS, 'fine_servizio', 1); % DEFINE eps
                         newEvent.server=client.pump/2;
                         %newEvent.client=client; %AGGIUSTAAAAAAAAAAAAAAAAAAAAAAAAAAA
                         newEvents{end+1}=newEvent;
