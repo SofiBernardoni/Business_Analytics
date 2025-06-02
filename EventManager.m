@@ -24,7 +24,7 @@ classdef EventManager < handle
             if config.preference
                 comp_servers= obj.access_compatible_servers(entity.preference);
             else
-                comp_servers= [1:numServers];
+                comp_servers= [1:config.numServers];
             end
         
             for ser = comp_servers

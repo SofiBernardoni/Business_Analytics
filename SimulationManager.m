@@ -15,7 +15,7 @@ classdef SimulationManager < handle
             obj.StatMgr = StatManager;
             obj.EventMgr = EventManager;
             %obj.TimeSimulatorMgr = TimeSimManager;
-            obj.print_stat= True; 
+            obj.print_stat= true; 
             
         end 
         
