@@ -1,17 +1,21 @@
 cosa abbiamo messo in state:
 - clock
 - list_events (future)
-- queue (={}) lista di entity
-- lengthQueue
+- queue (={}) lista di entity   cell array di cell array(queue) lungo come numcode
+- lengthQueue                   vettore lungo come numCode
 - lost_client (booleano, da rimettere a false)
-- lastLenghtUpdate (clock all'ultimo update ) (sumlenght)
+- lastLenghtUpdate (clock all'ultimo update ) (sumlenght) (vettore lungo come numCode
 - servers : [A, B, C, D] mettiamo 0 e 1 se il server è libero o occutpato
-- waitingPump: vettore lungo 2 per A e C
+- occ_server= lista di entity(???)
+- waitingPump = vettore da due a=1, c=2 true se non posso uscire perché sono bloccati 
+- processedClients vettore lungo quanto le code che dice quanti ne ha processati 
 
-Numeroserviti=conut-lost_client
+
 
 
 config
+- stopNumber
+- numQueue
 - balking(booleano) True per max lunghezza
 - maxLenght (_queue )
 - minBalking (intero)
@@ -21,19 +25,19 @@ config
 - arrivalrate
 - numServer
 - serviceRate
-- independentServiceQueue (vettore di booleani che dice se è indipendenti o no se true schedula il nuovo evento)
-- independentArrivalQueue
- 
+- indipendetServiceQueue vettori di veri o falsi
+- indipendetArrivalQueue
+- iIndipendentExitQueue
+
+
 
 evento:
 - clock
 - typo
-- server
-- queue (indice della coda)
 - server (cosa che cè solo nel caso di end service) 
-- client :
-    - tempo di arrivo
-     - preferenza
-     - pompa
-
-
+- queue
+- client: PERICOLOOOOOOOOOOOOOOOOooooOOOOOoOooOooOoooooOOOOOO
+   - timeQueueArrival vettore con gli ingressi in ogni coda (prendiamo il minimo del primo vettore: non serve prchè lo facciamo per ongi cosa)
+   - preferenza
+   - pompa
+   - WaitingQueueTime (da inizializzare a zero)
