@@ -6,38 +6,77 @@ classdef StatisticsManager < handle
         SumLength
         SumWaitingTime
         SumTotalTime
-        final_clock
-        total_entities
+        AverageLength
+        AverageWaitingTime
+        AverageTotalTime
     end
     
     methods
         % Constructor
-        function obj = StatisticsManager()
-            obj.LostClients= 0;
-            obj.SumLength = 0;
-            obj.SumWaitingTime= 0;
-            obj.SumTotalTime = 0;
+        function obj = StatisticsManager(numQueue)
+            obj.LostClients= zeros(1,numQueue);
+            obj.SumLength = zeros(1,numQueue);
+            obj.SumWaitingTime= zeros(1,numQueue);
+            obj.SumTotalTime = zeros(1,numQueue);
             
         end 
 
-        function state = update(state,event)
+        function state = update(obj,state,event)
+            % Update SumLength
+            obj.SumLength(event.queue) = obj.SumLength(event.queue) + state.LengthQueue(event.queue)*(state.clock-state.lastLengthUpdate(event.queue));
+            state.lastLengthUpdate(event.queue)=state.clock;
+
             % FAI SWITCH
             switch event.type
                 case 'arrivo'
                     % Update LostClients
                     if state.lost_client
-                        LostClients=LostClients+1;
+                        obj.LostClients(event.queue)=obj.LostClients(event.queue)+1;
                         state.lost_client=false;
                     end
-                    % Update SumLength
-                    SumLength = SumLength + state.LengthQueue*(state.clock-state.lastLengthUpdate);
-                    state.lastLengthUpdate=state.clock;
+                                        
                 case 'fine_servizio'
+
+                    % Update SumWaitingTime
+                    obj.SumWaitingTime(event.queue) = obj.SumWaitingTime(event.queue) + event.client.WaitingQueueTime(event.queue);
                     
+                    % Update SumTotalTime (just at the end...)
+                    obj.SumTotalTime(event.queue) = obj.SumTotalTime(event.queue) + (state.clock - event.client.timeQueueArrival(event.queue));
+ 
                 otherwise
                     error('EventManager:UnknownEventType', 'Unknown event type: %s', event.type);
             end
 
+        end
+
+        function clean(obj)
+            obj.LostClients= zeros(1,numQueue);
+            obj.SumLength = zeros(1,numQueue);
+            obj.SumWaitingTime= zeros(1,numQueue);
+            obj.SumTotalTime = zeros(1,numQueue);
+            obj.AverageLength = zeros(1, numQueue);
+            obj.AverageWaitingTime = zeros(1, numQueue);
+            obj.AverageTotalTime = zeros(1, numQueue);
+
+        end
+
+        function obj=finalEvaluation(obj,print_stat, final_clock, processedClients)
+            obj.AverageLength = obj.SumLength / final_clock;
+            obj.AverageWaitingTime = obj.SumWaitingTime ./ processedClients;
+            obj.AverageTotalTime = obj.SumTotalTime ./ processedClients;
+            if print_stat
+                for q=1:length(obj.LostClients)
+                    fprintf('Queue %d: Lost Clients = %d\n', q, obj.LostClients(q));
+                    fprintf('Queue %d: Average Length = %.2f\n', q, obj.AverageLength(q));
+                    fprintf('Queue %d: Average Waiting Time = %.2f\n', q, obj.AverageWaitingTime(q));
+                    fprintf('Queue %d: Average Total Time = %.2f\n', q, obj.AverageTotalTime(q));
+                end
+            end
+
+        end
+
+        function c=stopCount(obj,state)
+            c=max(state.processedClients+obj.LostClients);
         end
         
       

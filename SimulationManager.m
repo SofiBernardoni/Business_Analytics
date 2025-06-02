@@ -4,7 +4,6 @@ classdef SimulationManager < handle
     properties
         StatMgr
         EventMgr
-        % Events=[] % list of future events (event struct)
         TimeSimulatorMgr % vedi se tenere????????????????????????
         print_stat % bool. True se si vogliono stampare le statistiche a fine simulazione
     end
@@ -23,6 +22,7 @@ classdef SimulationManager < handle
         function obj=SimulateEvents(obj, config) 
             % Args:
             % config = Config struct with simulation configuration parameters (StopNumber: stopping criterion, more specific stuff... )
+            % print_results= bool. True if printing final statistics is required
 
             % Initialization
             state = initializeState(config); % da definire (struct/classe) % STRUTTURA DIVERSA IN BASE AL CONTESTO (DA PERSONALIZZARE IN SOTTOCLASSE CON INITALIZE STATE)
@@ -44,14 +44,12 @@ classdef SimulationManager < handle
                 for e=newEvents
                     state.list_events = EventUtils.insertEvents(state.list_events, e); 
                 end
-                state = obj.StatMgr.update(state,event); % vedi bene
+                state = obj.StatMgr.update(state,event);
+                count= obj.StatMgr.stopCount(state);
 
-                
-
-            
-                % da inserire in uscita client: count = count+ 1;
             end
-
+            % Finalize the simulation and print statistics if required
+            obj.StatMgr.finalEvaluation(obj, obj.print_stat, state.clock, state.processedClients);
         end
         
     end

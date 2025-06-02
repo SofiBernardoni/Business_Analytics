@@ -17,9 +17,9 @@ classdef EventUtils
         end
         
         % vedi se inserire data in struct
-        function event = scheduleEvent(clock, type, queue)
+        function event = scheduleEvent(clock, type, queue, client)
             % Creates new event (struct: clock, type, queue_id )
-            event = struct('clock',clock, 'type',type, 'queue', queue);  
+            event = struct('clock',clock, 'type',type, 'queue', queue, 'client', client);  
         end
 
     end

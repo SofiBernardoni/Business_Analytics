@@ -1,7 +1,14 @@
 classdef Config
     properties 
         StopNumber = 200;
-        arrivalRate = 0.5;
+        numQueue= 1;
+        % vedi se metterei valori di def , nel costruttore check che i
+        % vettori siano lunghi come le code. TUTTe le cose sottostanti sono
+        % vettori di lunghezza numQueue
+        independentArrivalQueue= [true];
+        independentServiceQueue= [true];
+        independentExitQueue= [true];
+        arrivalRate = [0.5];
         serviceRate = 0.6;
         numServers= 1;
         balking= true;
@@ -10,6 +17,7 @@ classdef Config
         preference= true;
         minPref= 1;
         maxPref= 2;
+
 
     end
 

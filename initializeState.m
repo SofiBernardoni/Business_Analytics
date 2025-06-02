@@ -10,18 +10,28 @@ function [state] = initializeState(config)
 % - waitingPump: vettore lungo 2 per A e C
 
     state.clock = 0;
+   
+    % Generate first client (specific for CASO BENZINAIO) for first event
+    first_client=struct('timeQueueArrival',zeros(1,config.numQueue), 'WaitingQueueTime',zeros(1,config.numQueue));
+    if config.preference
+        pref=randi([config.MinPref config.MaxPref]); % randomly samples the integer preference between config.MinPref and config.MaxPref included
+        first_client.preference= pref;
+    end
+    first_client.timeQueueArrival(1) = 0;
+    state.list_events = [EventUtils.scheduleEvent(0, 'arrivo', 1,first_client)];
     
-    state.queue = {}; 
-
-    state.lengthQueue = 0;
-
-    state.lastLengthUpdate = 0;
-
     state.lost_client = false;
     
-    state.list_events = [EventUtils.scheduleEvent(0, 'arrivo', 1)];
+    state.queue = repmat({cell(0,0)},1,config.numQueue); 
 
-    state.servers = zeros(1, config.numServers); 
+    state.lengthQueue = zeros(1,config.numQueue);
+
+    state.processedClients = zeros(1,config.numQueue);
+
+    state.lastLengthUpdate = zeros(1,config.numQueue);    
+
+    state.servers = zeros(config.numQueue, config.numServers); 
     
-    state.waitingPump = [false, false];
+    % specific for CASO BENZINAIO 
+    state.waitingPump = cell(1,2) ; 
 end
