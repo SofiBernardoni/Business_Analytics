@@ -14,6 +14,7 @@ classdef SimulationManager < handle
             obj.EventMgr = EventManager;
             obj.print_stat= true;  
         end 
+
         
         % Function performing the simulation and evaluating the statistics
         function obj=SimulateEvents(obj, config) 
@@ -21,7 +22,7 @@ classdef SimulationManager < handle
             % config = Config struct with simulation configuration parameters (StopNumber: stopping criterion, more specific stuff... )
 
             % Initialization
-            state = initializeState(config); % da definire (struct/classe) % STRUTTURA DIVERSA IN BASE AL CONTESTO (DA PERSONALIZZARE IN SOTTOCLASSE CON INITALIZE STATE)
+            state = initializeState(config, obj.EventMgr.TimeArrivalMgr); % da definire (struct/classe) % STRUTTURA DIVERSA IN BASE AL CONTESTO (DA PERSONALIZZARE IN SOTTOCLASSE CON INITALIZE STATE)
             % metteri time e lista degli eventi futuri
 
             count=0; 
@@ -37,6 +38,7 @@ classdef SimulationManager < handle
                 for e=newEvents
                     state.list_events = EventUtils.insertEvents(state.list_events, e); 
                 end
+                %state.list_events = EventUtils.insertEvents(state.list_events, newEvents);
                 state = obj.StatMgr.update(state,event);
                 count= obj.StatMgr.stopCount(state);
 
