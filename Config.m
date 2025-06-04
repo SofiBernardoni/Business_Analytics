@@ -6,18 +6,23 @@ classdef Config
         % vedi se metterei valori di def , nel costruttore check che i
         % vettori siano lunghi come le code. TUTTe le cose sottostanti sono
         % vettori di lunghezza numQueue
+        % CAMBIARE IN CODICE DOVE C'è CONFIG !!!!!!!!!!!!!!!!!!!!!!!!!
         numServers= [1];
-        independentArrivalQueue= [true];
-        independentServiceQueue= [true];
-        independentExitQueue= [true];
+
+        independentArrivalQueue
+        independentServiceQueue
+        independentExitQueue
+
         arrivalRate = [0.5]; % METTI A POSTO
         serviceRate = [0.6]; % METTI A POSTO
-        balking= [true];
-        maxLength= [5];
-        minBalking= [5];
-        preference= [true];
-        minPref= [1];
-        maxPref= [2];
+        
+        balking
+        maxLength
+        minBalking
+
+        preference
+        minPref
+        maxPref
 
 
     end
@@ -45,30 +50,68 @@ classdef Config
 
             % Initializing queues with no balking
             obj.balking= false(1,numQueue);
+            obj.maxLength=[];
+            obj.minBalking=[];
 
             % nitializing queues with no preference
             obj.preference = false(1,numQueue);
+            obj.minPref=[];
+            obj.maxPref=[];
 
         end
 
-        function obj=assignDependencies(DependentArrivalQueues, DependentServiceQueues, DependentExitQueues )
+        function obj=assignDependencies(obj,DependentArrivalQueues, DependentServiceQueues, DependentExitQueues)
             % Input args:
             % DependentArrivalQueues= list of queue ids. Queues with dependent arrivals 
             % DependentServiceQueues= list of queue ids. Queues with dependent services (i.e. service completion time does not just correspond to serive time)
             % DependentExitQueues= list of queue ids. Queues with dependent exit (i.e. entity exiting the queue don't just leave the system)
+            
+            obj.independentArrivalQueue(DependentArrivalQueues)= false;
+            obj.independentServiceQueue(DependentServiceQueues)= false;
+            obj.independentExitQueue(DependentExitQueues)= false;
         end
 
-        function obj=assignTimeRates()
+        function obj=assignTimeRates(obj )
             % mettere a posto in base a cosa si deve passare a time manager
             %obj.arrivalRate = arrivalRates;
             %obj.serviceRate = serviceRates;
         end
 
-        function obj=assignPreferences()
+        function obj= assignPreferences(obj,preferenceQueues, minPrefs, maxPrefs )
+            % Input args:
+            % preferenceQueues= list of queue ids. Queues with preference
+            % minPrefs, maxPrefs= list of integers. minimum e maximum values of preference (in the queues with preference with order given by preferenceQueues)
+
+            if length(preferenceQueues)~=length(minPrefs) || length(preferenceQueues)~=length(maxPrefs)
+                error('minPrefs or maxPrefs length not maching the number of queues with preference ')
+            else
+                j=1;
+                for p=preferenceQueues
+                    obj.preference(p)= true;
+                    obj.minPref(p) = minPrefs(j);
+                    obj.maxPref(p) = maxPrefs(j);
+                    j=j+1;
+                end
+            end
 
         end
 
-        function obj=assignBalking()
+        function obj=assignBalking(obj,balkingPreferences, minBalkings, maxLengths  )
+            % Input args:
+            % balkingPreferences= list of queue ids. Queues with balking
+            % minBalkings= list of integers. Minimum length of the queue leading to balking (entities entering with probability <1)
+            % maxLengths = list of integers. Maximum length of the queue (entities arriving leave immediately)
+            if length(balkingPreferences)~=length(minBalkings) || length(balkingPreferences)~=length(maxLengths)
+                error('minBalkings or maxLengths length not maching the number of queues with balking ')
+            else
+                j=1;
+                for p=balkingPreferences
+                    obj.balking(p)= true;
+                    obj.minBalking(p) = minBalkings(j);
+                    obj.maxLength(p) = maxLengths(j);
+                    j=j+1;
+                end
+            end
         end
 
 
