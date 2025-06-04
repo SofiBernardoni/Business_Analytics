@@ -3,9 +3,9 @@ classdef EventUtils
 
     methods (Static)
         
-        function Events = insertEvents(Events, newEvents)
+        function Events = insertEvents(Events, newEvent)
             % Inserts new Event in the list of the future ones, reordering the list
-            Events = [Events; newEvents];
+            Events(end+1) = newEvent;
             [~, idx] = sort([Events.clock]);
             Events = Events(idx);
         end
