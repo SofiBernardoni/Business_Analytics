@@ -2,6 +2,8 @@ classdef EventManager < handle
     % Class to manage simulation process (simulazione ad eventi)
     properties
         %currentEvent @function_handle
+        TimeArrivalMgr = [];
+        TimeServiceMgr=[];
     end
 
    methods (Abstract)
@@ -13,11 +15,16 @@ classdef EventManager < handle
     end
     
     methods
-        %function obj = EventManager()
+        function obj = EventManager(TimeGenerator, config)
             % Class constructor
             % Initializing to a null default
             %obj.currentEventHandler = @(,) disp('Nessun handler evento impostato');
-        %end
+            for i=1:config.numQueue
+                obj.TimeArrivalMgr{i} = TimeGenerator(config.arrivalMode{i}{:}); % {:} passa come singoli input 
+                obj.TimeServiceMgr{i} = TimeGenerator(config.serviceMode{i}{:}); % {:} passa come singoli input 
+            end
+            
+        end
 
         function [state,fail] = checkAdmission(obj,id_queue, entity,state, config)
             fail=true;
@@ -55,7 +62,10 @@ classdef EventManager < handle
             state.LengthQueue(id_queue) = state.LengthQueue(id_queue)-1;
         
             state.servers(id_queue,s)=1; % server not avavilable anymore
-            serviceTime = exprnd(config.serviceMean); % see extension
+            %serviceTime = exprnd(config.serviceMean); % see extension
+            
+            serviceTime = obj.TimeServiceMgr{event.queue}.sample(state.clock, state.lengthQueue(event.queue), []);
+            
             % Simulate new end_service on the queue if it's independent
             if config.independentServiceQueue(id_queue)
                newEvent = scheduleEvent(state.clock + serviceTime, 'fine_servizio', id_queue,ent);
@@ -107,7 +117,8 @@ classdef EventManager < handle
             
             % Simulate new arrival if the queue has independent arrivals
             if config.independentArrivalQueue(event.queue)
-                interArrivalTime= exprnd(config.arrivalRate); %  vedi se mettere distribuzione generica
+                %interArrivalTime= exprnd(config.arrivalRate); %  vedi se mettere distribuzione generica
+                interArrivalTime = obj.TimeArrivalMgr{event.queue}.sample(state.clock, state.lengthQueue(event.queue), []);
                 time_arrival= state.clock + interArrivalTime;
                 % Creating new entity (client)
                 newEntity=struct('timeQueueArrival',zeros(1,config.numQueue), 'WaitingQueueTime',zeros(1,config.numQueue));

@@ -4,7 +4,7 @@ classdef SimulationManager < handle
     properties
         StatMgr
         EventMgr
-        TimeSimulatorMgr % vedi se tenere????????????????????????
+        %TimeSimulatorMgr % vedi se tenere????????????????????????
         print_stat % bool. True se si vogliono stampare le statistiche a fine simulazione
     end
     
@@ -13,7 +13,7 @@ classdef SimulationManager < handle
         function obj = SimulationManager(StatManager, EventManager)
             obj.StatMgr = StatManager;
             obj.EventMgr = EventManager;
-            %obj.TimeSimulatorMgr = TimeSimManager;
+            %obj.TimeSimulatorMgr = TimeGenerator;
             obj.print_stat= true; 
             
         end 
@@ -38,6 +38,14 @@ classdef SimulationManager < handle
                 event= EventUtils.popNextEvent(state.list_events);
                 state.clock=event.clock;
                 
+                % Getting the time distribution
+                l=config.numQueue;
+                
+                % cosa da mettere in config:
+                %arrivalMode={{'iid', 'exponential', 1}};
+                %serviceMode={{'iid', 'exponential', 1}};
+
+
                 % Manage the event
                 handle_fun= obj.EventMgr.handleEvent(event.type);
                 [state, newEvents]=handle_fun(state, event, config);
