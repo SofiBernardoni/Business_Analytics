@@ -1,5 +1,5 @@
 classdef StatisticsManager < handle
-    % Class to manage simulation process (simulazione ad eventi)
+    % Class to manage statistics
     
     properties
         LostClients
@@ -26,7 +26,6 @@ classdef StatisticsManager < handle
             obj.SumLength(event.queue) = obj.SumLength(event.queue) + state.LengthQueue(event.queue)*(state.clock-state.lastLengthUpdate(event.queue));
             state.lastLengthUpdate(event.queue)=state.clock;
 
-            % FAI SWITCH
             switch event.type
                 case 'arrivo'
                     % Update LostClients

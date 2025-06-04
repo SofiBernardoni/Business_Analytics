@@ -4,8 +4,7 @@ classdef SimulationManager < handle
     properties
         StatMgr
         EventMgr
-        %TimeSimulatorMgr % vedi se tenere????????????????????????
-        print_stat % bool. True se si vogliono stampare le statistiche a fine simulazione
+        print_stat % bool. True if printing statistics at the end of the simulation is required
     end
     
     methods
@@ -13,23 +12,17 @@ classdef SimulationManager < handle
         function obj = SimulationManager(StatManager, EventManager)
             obj.StatMgr = StatManager;
             obj.EventMgr = EventManager;
-            %obj.TimeSimulatorMgr = TimeGenerator;
-            obj.print_stat= true; 
-            
+            obj.print_stat= true;  
         end 
         
         % Function performing the simulation and evaluating the statistics
         function obj=SimulateEvents(obj, config) 
             % Args:
             % config = Config struct with simulation configuration parameters (StopNumber: stopping criterion, more specific stuff... )
-            % print_results= bool. True if printing final statistics is required
 
             % Initialization
             state = initializeState(config); % da definire (struct/classe) % STRUTTURA DIVERSA IN BASE AL CONTESTO (DA PERSONALIZZARE IN SOTTOCLASSE CON INITALIZE STATE)
             % metteri time e lista degli eventi futuri
-
-            % nel nostro caso potremmo simulare fuori il primo arrivo
-
 
             count=0; 
             while count <= config.StopNumber
@@ -38,14 +31,6 @@ classdef SimulationManager < handle
                 event= EventUtils.popNextEvent(state.list_events);
                 state.clock=event.clock;
                 
-                % Getting the time distribution
-                l=config.numQueue;
-                
-                % cosa da mettere in config:
-                %arrivalMode={{'iid', 'exponential', 1}};
-                %serviceMode={{'iid', 'exponential', 1}};
-
-
                 % Manage the event
                 handle_fun= obj.EventMgr.handleEvent(event.type);
                 [state, newEvents]=handle_fun(state, event, config);
@@ -56,7 +41,8 @@ classdef SimulationManager < handle
                 count= obj.StatMgr.stopCount(state);
 
             end
-            % Finalize the simulation and print statistics if required
+
+            % Evaluate the simulation and print statistics if required
             obj.StatMgr.finalEvaluation(obj, obj.print_stat, state.clock, state.processedClients);
         end
         

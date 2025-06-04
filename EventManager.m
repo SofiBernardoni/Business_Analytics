@@ -1,5 +1,6 @@
 classdef EventManager < handle
-    % Class to manage simulation process (simulazione ad eventi)
+    % Class to manage events
+    
     properties
         %currentEvent @function_handle
         TimeArrivalMgr = [];
@@ -15,23 +16,23 @@ classdef EventManager < handle
     end
     
     methods
-        function obj = EventManager(TimeGenerator, config)
+        function obj = EventManager(config)
             % Class constructor
             % Initializing to a null default
             %obj.currentEventHandler = @(,) disp('Nessun handler evento impostato');
             for i=1:config.numQueue
-                obj.TimeArrivalMgr{i} = TimeGenerator(config.arrivalMode{i}{:}); % {:} passa come singoli input 
-                obj.TimeServiceMgr{i} = TimeGenerator(config.serviceMode{i}{:}); % {:} passa come singoli input 
+                obj.TimeArrivalMgr{i} = TimeGenerator(config.arrivalMode{i}{:});
+                obj.TimeServiceMgr{i} = TimeGenerator(config.serviceMode{i}{:});
             end
             
         end
 
         function [state,fail] = checkAdmission(obj,id_queue, entity,state, config)
             fail=true;
-            if config.preference
+            if config.preference(id_queue)
                 comp_servers= obj.access_compatible_servers(entity.preference);
             else
-                comp_servers= 1:config.numServers;
+                comp_servers= 1:config.numServers(id_queue);
             end
         
             for ser = comp_servers
@@ -44,10 +45,10 @@ classdef EventManager < handle
 
         function [state, newEvent] = enterService(obj,entity,state, id_queue, config)
         
-            if config.preference
+            if config.preference(id_queue)
                 comp_servers= obj.compatible_servers(entity.preference);
             else
-                comp_servers= 1:numServers;
+                comp_servers= 1:config.numServers(id_queue);
             end
            
             for s=comp_servers
@@ -62,7 +63,6 @@ classdef EventManager < handle
             state.LengthQueue(id_queue) = state.LengthQueue(id_queue)-1;
         
             state.servers(id_queue,s)=1; % server not avavilable anymore
-            %serviceTime = exprnd(config.serviceMean); % see extension
             
             serviceTime = obj.TimeServiceMgr{event.queue}.sample(state.clock, state.lengthQueue(event.queue), []);
             
@@ -82,11 +82,11 @@ classdef EventManager < handle
             newEvents={};
             
             enterSystem= true;
-            if config.balking
-                if state.lengthQueue(event.queue)+1>config.maxLength
+            if config.balking(event.queue)
+                if state.lengthQueue(event.queue)+1>config.maxLength(event.queue)
                     state.lostClient = true;
                     enterSystem= false;
-                elseif state.lengthQueue(event.queue)+1<=config.maxLength && state.lengthQueue(event.queue)+1>=config.minBalking
+                elseif state.lengthQueue(event.queue)+1<=config.maxLength(event.queue) && state.lengthQueue(event.queue)+1>=config.minBalking(event.queue)
                     if rand < 0.5 % see if you want to change percentage in config
                         state.lostClient = true;
                         enterSystem= false;
@@ -117,13 +117,12 @@ classdef EventManager < handle
             
             % Simulate new arrival if the queue has independent arrivals
             if config.independentArrivalQueue(event.queue)
-                %interArrivalTime= exprnd(config.arrivalRate); %  vedi se mettere distribuzione generica
                 interArrivalTime = obj.TimeArrivalMgr{event.queue}.sample(state.clock, state.lengthQueue(event.queue), []);
                 time_arrival= state.clock + interArrivalTime;
                 % Creating new entity (client)
                 newEntity=struct('timeQueueArrival',zeros(1,config.numQueue), 'WaitingQueueTime',zeros(1,config.numQueue));
-                if config.preference
-                    pref=randi([config.MinPref config.MaxPref]); % randomly samples the integer preference between config.MinPref and config.MaxPref included
+                if config.preference(event.queue)
+                    pref=randi([config.minPref(event.queue) config.maxPref(event.queue)]); % randomly samples the integer preference between config.MinPref and config.MaxPref included
                     newEntity.preference= pref;
                 end
                 newEvent = scheduleEvent(time_arrival, 'arrivo', event.queue, newEntity);

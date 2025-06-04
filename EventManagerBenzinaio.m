@@ -1,5 +1,6 @@
 classdef EventManagerBenzinaio < EventManager
-    % Class to manage simulation process (simulazione ad eventi) (CASO BENZINAIO) 
+    % Subclass to manage events in the special case (caso benzinaio) 
+    
     properties (Constant)
         EPS=1e-4; % used to manage exit "cascade" b--> a and d--> c
     end
