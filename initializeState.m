@@ -13,11 +13,14 @@ function [state] = initializeState(config, TimeArrivalMgr)
 
     state.clock = 0;
     
+    state.lengthQueue = zeros(1,config.numQueue);
+    
     % Generate first events : first arrivals in queues with independent arrivals
     state.list_events = [];
-    newEvents=[];
+    %newEvents=[];
+    newEvents={};
     for q=1:config.numQueue
-        if independentArrivalQueue(q)
+        if config.independentArrivalQueue(q)
             first_client=struct('timeQueueArrival',zeros(1,config.numQueue), 'WaitingQueueTime',zeros(1,config.numQueue));
             if config.preference(q)
                 pref=randi([config.MinPref(q) config.MaxPref(q)]); % randomly samples the integer preference between config.MinPref and config.MaxPref included
@@ -25,15 +28,17 @@ function [state] = initializeState(config, TimeArrivalMgr)
             end
             first_client.timeQueueArrival(q) = TimeArrivalMgr{q}.sample(state.clock, state.lengthQueue(q), []);
         end
-        newEvents(end+1)=EventUtils.scheduleEvent(first_client.timeQueueArrival(q), 'arrivo', q,first_client);
+        %newEvents(end+1)=EventUtils.scheduleEvent(first_client.timeQueueArrival(q), 'arrivo', q,first_client);
+        newEvents{end+1}=EventUtils.scheduleEvent(first_client.timeQueueArrival(q), 'arrivo', q,first_client);
+        for e=newEvents
+            state.list_events = EventUtils.insertEvents(state.list_events, e); 
+        end
     end
     state.list_events = EventUtils.insertEvents(state.list_events, newEvents);
     
     state.lost_client = false;
     
     state.queue = repmat({cell(0,0)},1,config.numQueue); 
-
-    state.lengthQueue = zeros(1,config.numQueue);
 
     state.processedClients = zeros(1,config.numQueue);
 

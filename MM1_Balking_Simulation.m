@@ -10,7 +10,7 @@ serviceRate=4;
 
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber,numQueue, numServers);
-configuration.assignTimes({{'iid', 'exponential',arrivalRate}},{{'iid', 'exponential',serviceRate}})
+configuration.assignTimes({{'iid', 'exponential',arrivalRate}},{{'iid', 'exponential',serviceRate}});
 configuration.assignBalking([1],min_balking, max_length);
 
 EventMgr= EventManager(configuration); % Creating Event Manager

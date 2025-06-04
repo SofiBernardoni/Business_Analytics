@@ -7,15 +7,27 @@ classdef EventManager < handle
         TimeServiceMgr=[];
     end
 
-   methods (Abstract)
-       
-        comp_servers= access_compatible_servers(~,pref);  % Function that associates compatible servers (allowing the access to the client) to the preference (has to be defined when config.preference=true)
-        comp_servers= compatible_servers(~,pref);  % Function that associates compatible servers to the preference (has to be defined when config.preference=true)
-        newEvent= dependentService(~,time,server,entity,id_queue); % Function that stores an event different from 'fine_servizio' on the queue(has to be defined when config.independentServiceQueue=false) 
-        state = exitService(~,state,event); % Function called after 'fine_servizio' on the queue when sth else follows  (has to be defined when config.independentExitQueue=false) 
-    end
-    
     methods
+        % Methods not implemented in the general version (abstract ones)
+
+        % Function that associates compatible servers (allowing the access to the client) to the preference (has to be defined when config.preference=true)
+        function comp_servers= access_compatible_servers(~,pref)
+        end
+
+        % Function that associates compatible servers to the preference (has to be defined when config.preference=true)
+        function comp_servers= compatible_servers(~,pref)
+        end
+        
+        % Function that stores an event different from 'fine_servizio' on the queue(has to be defined when config.independentServiceQueue=false) 
+        function newEvent= dependentService(~,time,server,entity,id_queue)
+        end
+
+        % Function called after 'fine_servizio' on the queue when sth else follows  (has to be defined when config.independentExitQueue=false) 
+        function state = exitService(~,state,event)
+        end
+
+        % Methods implemented
+
         function obj = EventManager(config)
             % Class constructor
             % Initializing to a null default
