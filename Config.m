@@ -3,23 +3,18 @@ classdef Config
         StopNumber = 200;
         numQueue= 1;
         
-        % vedi se metterei valori di def , nel costruttore check che i
-        % vettori siano lunghi come le code. TUTTe le cose sottostanti sono
-        % vettori di lunghezza numQueue
-        % CAMBIARE IN CODICE DOVE C'è CONFIG !!!!!!!!!!!!!!!!!!!!!!!!!
         numServers= [1];
 
         independentArrivalQueue
         independentServiceQueue
         independentExitQueue
 
-        arrivalRate = [0.5]; % METTI A POSTO
-        serviceRate = [0.6]; % METTI A POSTO
+        arrivalMode
+        serviceMode
         
         balking
         maxLength
         minBalking
-
         preference
         minPref
         maxPref
@@ -48,6 +43,10 @@ classdef Config
             obj.independentServiceQueue= true(1,numQueue);
             obj.independentExitQueue= true(1,numQueue);
 
+            basicMode = {'iid', 'exponential', 1};
+            obj.arrivalMode = repmat({basicMode}, 1, numQueue);
+            obj.serviceMode = repmat({basicMode}, 1, numQueue);
+
             % Initializing queues with no balking
             obj.balking= false(1,numQueue);
             obj.maxLength=[];
@@ -71,10 +70,14 @@ classdef Config
             obj.independentExitQueue(DependentExitQueues)= false;
         end
 
-        function obj=assignTimeRates(obj )
-            % mettere a posto in base a cosa si deve passare a time manager
-            %obj.arrivalRate = arrivalRates;
-            %obj.serviceRate = serviceRates;
+        function obj=assignTimes(obj, arrivalModes, serviceModes)
+            % arrivalModes, serviceModes = cell arrays of TimeGenerator inputs  
+            if length(arrivalModes)~=obj.numQueue || length(serviceModes)~=obj.numQueue
+                error("Input length not corresponding to the number of queues")
+            else
+                obj.arrivalMode=arrivalModes;
+                obj.serviceMode=serviceModes;
+            end
         end
 
         function obj= assignPreferences(obj,preferenceQueues, minPrefs, maxPrefs )
