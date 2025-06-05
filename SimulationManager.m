@@ -29,9 +29,7 @@ classdef SimulationManager < handle
             while count <= config.StopNumber
                 
                 % Read the first event in the ordered list of the events
-                %%%%%%state.list_events % ATTENZIONE DEVEESSERE UNA LISTA E NON UNO STRUCT
                 [state.list_events, event] = EventUtils.popNextEvent(state.list_events);
-                %%%event % PROBLEMA è VUOTO
                 state.clock=event.clock;
                 
                 % Manage the event
@@ -40,7 +38,6 @@ classdef SimulationManager < handle
                 for e=1:length(newEvents)
                     state.list_events = EventUtils.insertEvents(state.list_events, newEvents{e}); 
                 end
-                %state.list_events = EventUtils.insertEvents(state.list_events, newEvents);
                 state = obj.StatMgr.update(state,event);
                 count= obj.StatMgr.stopCount(state);
 

@@ -48,7 +48,7 @@ classdef EventManager < handle
             end
         
             for ser = comp_servers
-                if state.servers(id_queue,ser) == 0
+                if state.servers{id_queue}(ser) == 0
                     fail= false; % the entity can access servers
                     break;
                 end
@@ -64,7 +64,7 @@ classdef EventManager < handle
             end
            
             for s=comp_servers
-                if state.servers(id_queue,s)==0
+                if state.servers{id_queue}(s)==0
                     break;
                 end
             end
@@ -76,7 +76,7 @@ classdef EventManager < handle
                 state.lengthQueue(id_queue) = state.lengthQueue(id_queue)-1;
             end
         
-            state.servers(id_queue,s)=1; % server not avavilable anymore
+            state.servers{id_queue}(s)=1; % server not avavilable anymore
             
             serviceTime = obj.TimeServiceMgr{id_queue}.sample(state.clock, state.lengthQueue(id_queue), []);
             
@@ -149,7 +149,7 @@ classdef EventManager < handle
         function [state, newEvents]= handleEndService(obj,state, event, config)
             state.processedClients(event.queue)= state.processedClients(event.queue)+1;
             newEvents={};
-            state.servers(event.queue,event.server)= 0; %server again available
+            state.servers{event.queue}(event.server)= 0; %server again available
             fail= false;
             while state.lengthQueue(event.queue)>0 && ~fail
                 newEntity= state.queue{event.queue}{1} ; % first entity in the queue

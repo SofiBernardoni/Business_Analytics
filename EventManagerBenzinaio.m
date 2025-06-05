@@ -33,7 +33,7 @@ classdef EventManagerBenzinaio < EventManager
             entity_exits= true;
             client=event.client;
             if client.pump==1 || event.client.pump==3 % driver in A or C cannot exit if B or D is not available
-                if state.servers(1,client.pump+1)==1
+                if state.servers{1}(client.pump+1)==1
                     entity_exits= false;
                     idx=(client.pump-1)/2+1;
                     state.waitingPump{idx}=client;

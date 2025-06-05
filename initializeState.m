@@ -35,7 +35,6 @@ function [state] = initializeState(config, TimeArrivalMgr)
     for e=1:length(newEvents)
         state.list_events = EventUtils.insertEvents(state.list_events, newEvents{e}); 
     end
-    %state.list_events = EventUtils.insertEvents(state.list_events, newEvents);
     
     state.lost_client = false;
     
@@ -45,9 +44,9 @@ function [state] = initializeState(config, TimeArrivalMgr)
 
     state.lastLengthUpdate = zeros(1,config.numQueue);    
 
-    state.servers = [];
+    state.servers = cell(1, config.numQueue);
     for q=1:config.numQueue
-        state.servers(q) = zeros(1, config.numServers(q)); % all servers are available
+        state.servers{q} = zeros(1, config.numServers(q)); % all servers are available
     end
 
     state.processedClients= zeros(1,config.numQueue);    
