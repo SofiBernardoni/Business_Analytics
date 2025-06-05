@@ -69,27 +69,29 @@ classdef EventManager < handle
                 end
             end
             
-            ent=state.queue{id_queue}{1}; 
-            ent.WaitingQueueTime(id_queue) = state.clock - ent.timeQueueArrival(id_queue); % waiting time in queue id_queue
-            state.queue{id_queue}(1)=[];  % exiting the queue
-            state.LengthQueue(id_queue) = state.LengthQueue(id_queue)-1;
+            %ent=state.queue{id_queue}{1}; 
+            if state.lengthQueue(id_queue)> 0 % the entity was waiting in the queue
+                entity.WaitingQueueTime(id_queue) = state.clock - entity.timeQueueArrival(id_queue); % waiting time in queue id_queue
+                state.queue{id_queue}(1)=[];  % exiting the queue
+                state.lengthQueue(id_queue) = state.lengthQueue(id_queue)-1;
+            end
         
             state.servers(id_queue,s)=1; % server not avavilable anymore
             
-            serviceTime = obj.TimeServiceMgr{event.queue}.sample(state.clock, state.lengthQueue(event.queue), []);
+            serviceTime = obj.TimeServiceMgr{id_queue}.sample(state.clock, state.lengthQueue(id_queue), []);
             
             % Simulate new end_service on the queue if it's independent
             if config.independentServiceQueue(id_queue)
-               newEvent = scheduleEvent(state.clock + serviceTime, 'fine_servizio', id_queue,ent);
-               newEvent.server=s;
+               newEvent = EventUtils.scheduleEvent(state.clock + serviceTime, 'fine_servizio', id_queue,entity,s);
+               %newEvent.server=s;
             else
-               newEvent= obj.dependentService(state.clock + serviceTime,s,ent,id_queue); % metti in metodi astratti
+               newEvent= obj.dependentService(state.clock + serviceTime,s,entity,id_queue); % metti in metodi astratti
             end
       
         end
 
         
-        function [state, newEvents]= handleArrival(~,state, event, config)
+        function [state, newEvents]= handleArrival(obj,state, event, config)
 
             newEvents={};
             
@@ -115,7 +117,7 @@ classdef EventManager < handle
                     [state,fail] = obj.checkAdmission(event.queue,newEntity,state, config); % fail=true if not admitted %%%%%%%% DEFINE con evento service time simulato
                     enterQueue=fail;
                     if ~fail
-                        [state,newEvent] = obj.enterService(entity,state,event.queue, config);
+                        [state,newEvent] = obj.enterService(newEntity,state,event.queue, config);
                         newEvents{end+1}=newEvent;
                     end
                 end
@@ -137,14 +139,14 @@ classdef EventManager < handle
                     pref=randi([config.minPref(event.queue) config.maxPref(event.queue)]); % randomly samples the integer preference between config.MinPref and config.MaxPref included
                     newEntity.preference= pref;
                 end
-                newEvent = scheduleEvent(time_arrival, 'arrivo', event.queue, newEntity);
+                newEvent = EventUtils.scheduleEvent(time_arrival, 'arrivo', event.queue, newEntity);
                 newEvent.client.timeQueueArrival(event.queue) = time_arrival;
                 newEvents{end+1}=newEvent;
             end
 
         end
 
-        function [state, newEvents]= handleEndService(~,state, event, config)
+        function [state, newEvents]= handleEndService(obj,state, event, config)
             state.processedClients(event.queue)= state.processedClients(event.queue)+1;
             newEvents={};
             state.servers(event.queue,event.server)= 0; %server again available
@@ -153,8 +155,8 @@ classdef EventManager < handle
                 newEntity= state.queue{event.queue}{1} ; % first entity in the queue
                 [state,fail] = obj.checkAdmission(event.queue, newEntity,state, config); % fail=true if not admitted 
                 if ~fail
-                    [state, newEvents] = obj.enterService(newEntity,state,event.queue, config);
-                    newEvents{end+1}=newEvents;
+                    [state, newEvent] = obj.enterService(newEntity,state,event.queue, config);
+                    newEvents{end+1}=newEvent;
                 end
             end
 

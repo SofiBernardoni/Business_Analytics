@@ -16,8 +16,9 @@ function [state] = initializeState(config, TimeArrivalMgr)
     state.lengthQueue = zeros(1,config.numQueue);
     
     % Generate first events : first arrivals in queues with independent arrivals
-    state.list_events = [];
+    state.list_events = {};
     %newEvents=[];
+    %state.list_events= struct('clock',{}, 'type',{}, 'queue', {}, 'client', {}, 'server',{});
     newEvents={};
     for q=1:config.numQueue
         if config.independentArrivalQueue(q)
@@ -28,13 +29,13 @@ function [state] = initializeState(config, TimeArrivalMgr)
             end
             first_client.timeQueueArrival(q) = TimeArrivalMgr{q}.sample(state.clock, state.lengthQueue(q), []);
         end
-        %newEvents(end+1)=EventUtils.scheduleEvent(first_client.timeQueueArrival(q), 'arrivo', q,first_client);
+        %newEvents(end+1)= EventUtils.scheduleEvent(first_client.timeQueueArrival(q), 'arrivo', q,first_client);
         newEvents{end+1}=EventUtils.scheduleEvent(first_client.timeQueueArrival(q), 'arrivo', q,first_client);
-        for e=newEvents
-            state.list_events = EventUtils.insertEvents(state.list_events, e); 
-        end
     end
-    state.list_events = EventUtils.insertEvents(state.list_events, newEvents);
+    for e=1:length(newEvents)
+        state.list_events = EventUtils.insertEvents(state.list_events, newEvents{e}); 
+    end
+    %state.list_events = EventUtils.insertEvents(state.list_events, newEvents);
     
     state.lost_client = false;
     

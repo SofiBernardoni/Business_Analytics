@@ -19,7 +19,7 @@ classdef EventManagerBenzinaio < EventManager
 
         function newEvent= dependentService(~,time,server,entity,id_queue)
             if id_queue==1
-                newEvent = scheduleEvent(time, 'arrivo', 2,entity);
+                newEvent = EventUtils.scheduleEvent(time, 'arrivo', 2,entity);
                 newEvent.client.timeQueueArrival(event.queue) = time;
                 entity.pump=server; % associate the pump to the client
             else
@@ -41,14 +41,14 @@ classdef EventManagerBenzinaio < EventManager
             end
             if entity_exits
                 % Scheduling end of service
-                newEvent = scheduleEvent(state.clock, 'fine_servizio', 1, client);
-                newEvent.server=client.pump;
+                newEvent = EventUtils.scheduleEvent(state.clock, 'fine_servizio', 1, client,client.pump);
+                %newEvent.server=client.pump;
                 newEvents{end+1}=newEvent;
 
                 if client.pump==2 || event.client.pump==4 % if driver in B or D, check if the driver behind is waiting
                     if ~isempty(state.waitingPump{client.pump/2})
-                        newEvent = scheduleEvent(state.clock + obj.EPS, 'fine_servizio', 1, state.waitingPump{client.pump/2}); 
-                        newEvent.server= client.pump/2;
+                        newEvent = EventUtils.scheduleEvent(state.clock + obj.EPS, 'fine_servizio', 1, state.waitingPump{client.pump/2},client.pump/2); 
+                        %newEvent.server= client.pump/2;
                         newEvents{end+1}=newEvent;
                         
                         state.waitingPump{client.pump/2}= []; % corresponding waiting pump empty again

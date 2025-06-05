@@ -29,14 +29,16 @@ classdef SimulationManager < handle
             while count <= config.StopNumber
                 
                 % Read the first event in the ordered list of the events
-                event= EventUtils.popNextEvent(state.list_events);
+                %%%%%%state.list_events % ATTENZIONE DEVEESSERE UNA LISTA E NON UNO STRUCT
+                [state.list_events, event] = EventUtils.popNextEvent(state.list_events);
+                %%%event % PROBLEMA è VUOTO
                 state.clock=event.clock;
                 
                 % Manage the event
                 handle_fun= obj.EventMgr.handleEvent(event.type);
                 [state, newEvents]=handle_fun(state, event, config);
-                for e=newEvents
-                    state.list_events = EventUtils.insertEvents(state.list_events, e); 
+                for e=1:length(newEvents)
+                    state.list_events = EventUtils.insertEvents(state.list_events, newEvents{e}); 
                 end
                 %state.list_events = EventUtils.insertEvents(state.list_events, newEvents);
                 state = obj.StatMgr.update(state,event);
@@ -45,7 +47,7 @@ classdef SimulationManager < handle
             end
 
             % Evaluate the simulation and print statistics if required
-            obj.StatMgr.finalEvaluation(obj, obj.print_stat, state.clock, state.processedClients);
+            obj.StatMgr.finalEvaluation(obj.print_stat, state.clock, state.processedClients);
         end
         
     end

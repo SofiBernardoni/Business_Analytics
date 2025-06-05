@@ -23,7 +23,7 @@ classdef StatisticsManager < handle
 
         function state = update(obj,state,event)
             % Update SumLength
-            obj.SumLength(event.queue) = obj.SumLength(event.queue) + state.LengthQueue(event.queue)*(state.clock-state.lastLengthUpdate(event.queue));
+            obj.SumLength(event.queue) = obj.SumLength(event.queue) + state.lengthQueue(event.queue)*(state.clock-state.lastLengthUpdate(event.queue));
             state.lastLengthUpdate(event.queue)=state.clock;
 
             switch event.type
