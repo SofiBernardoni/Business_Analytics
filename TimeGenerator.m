@@ -13,6 +13,11 @@ classdef TimeGenerator < handle
 
     methods
         function obj = TimeGenerator(type, varargin)
+            if nargin == 0
+                % Default value when nothing is passed
+                type = 'deterministic';
+                varargin = {Inf};  % non genera un evento
+            end
             obj.Type = type;
             obj.Index = 1;
 
