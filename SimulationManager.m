@@ -39,7 +39,7 @@ classdef SimulationManager < handle
                     state.list_events = EventUtils.insertEvents(state.list_events, newEvents{e}); 
                 end
                 state = obj.StatMgr.update(state,event);
-                count= obj.StatMgr.stopCount(state);
+                count= obj.StatMgr.stopCount(state)
 
             end
 

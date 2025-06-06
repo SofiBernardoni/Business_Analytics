@@ -29,9 +29,9 @@ classdef StatisticsManager < handle
             switch event.type
                 case 'arrivo'
                     % Update LostClients
-                    if state.lost_client
+                    if state.lostClient
                         obj.LostClients(event.queue)=obj.LostClients(event.queue)+1;
-                        state.lost_client=false;
+                        state.lostClient=false;
                     end
                                         
                 case 'fine_servizio'

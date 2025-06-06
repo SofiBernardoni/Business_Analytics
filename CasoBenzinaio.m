@@ -1,5 +1,6 @@
 % SIMULATION EXAMPLE: benzinaio
 clear all
+rng(1234)
 
 StopNumber = 200;
 numQueue= 2;
@@ -15,7 +16,7 @@ maxPref=2;
 
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber,numQueue, numServers);
-configuration= configuration.assignTimes({{'iid', 'exponential',arrivalRate1},{}},{{'iid', 'exponential', serviceRate1},{'iid', 'exponential',serviceRate2}})
+configuration= configuration.assignTimes({{'iid', 'exponential',arrivalRate1},{}},{{'iid', 'exponential', serviceRate1},{'iid', 'exponential',serviceRate2}});
 configuration=configuration.assignDependencies([2], [1], [2]);
 configuration=configuration.assignPreferences([1], minPref, maxPref );
 configuration=configuration.assignBalking([1], [maxLength], [maxLength] );

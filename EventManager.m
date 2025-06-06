@@ -69,7 +69,6 @@ classdef EventManager < handle
                 end
             end
             
-            %ent=state.queue{id_queue}{1}; 
             if state.lengthQueue(id_queue)> 0 % the entity was waiting in the queue
                 entity.WaitingQueueTime(id_queue) = state.clock - entity.timeQueueArrival(id_queue); % waiting time in queue id_queue
                 state.queue{id_queue}(1)=[];  % exiting the queue
@@ -77,13 +76,12 @@ classdef EventManager < handle
             end
         
             state.servers{id_queue}(s)=1; % server not avavilable anymore
-            
+                        
             serviceTime = obj.TimeServiceMgr{id_queue}.sample(state.clock, state.lengthQueue(id_queue), []);
             
             % Simulate new end_service on the queue if it's independent
             if config.independentServiceQueue(id_queue)
                newEvent = EventUtils.scheduleEvent(state.clock + serviceTime, 'fine_servizio', id_queue,entity,s);
-               %newEvent.server=s;
             else
                newEvent= obj.dependentService(state.clock + serviceTime,s,entity,id_queue); % metti in metodi astratti
             end
