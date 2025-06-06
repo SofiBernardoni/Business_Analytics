@@ -2,11 +2,11 @@
 clear all
 rng(1234)
 
-StopNumber = 200;
+StopNumber = 800;
 numQueue= 2;
-numServers= [4,2];
-arrivalRate1 = 2;
-serviceRate1 = 2;
+numServers= [4,1];
+arrivalRate1 = 1;
+serviceRate1 = 0.5;
 serviceRate2 = 1;
 maxLength = 5;
 

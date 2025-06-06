@@ -48,7 +48,7 @@ classdef EventManagerBenzinaio < EventManager
 
                 if client_pump==2 || client_pump==4 % if driver in B or D, check if the driver behind is waiting
                     if ~isempty(state.waitingPump{client_pump/2})
-                        newEvent = EventUtils.scheduleEvent(state.clock + obj.EPS, 'fine_servizio', 1, state.waitingPump{client_pump/2},client_pump/2); 
+                        newEvent = EventUtils.scheduleEvent(state.clock + obj.EPS, 'fine_servizio', 1, state.waitingPump{client_pump/2},client_pump-1); 
                         newEvents{end+1}=newEvent;
                         
                         state.waitingPump{client_pump/2}= []; % corresponding waiting pump empty again
