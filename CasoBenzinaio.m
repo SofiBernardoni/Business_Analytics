@@ -4,11 +4,11 @@ rng(1234)
 
 StopNumber = 200;
 numQueue= 2;
-numServers= [4,1];
-arrivalRate1 = 10;
+numServers= [4,2];
+arrivalRate1 = 2;
 serviceRate1 = 2;
 serviceRate2 = 1;
-maxLength = 3;
+maxLength = 5;
 
 minPref=1;
 maxPref=2;

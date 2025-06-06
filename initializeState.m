@@ -46,9 +46,7 @@ function [state] = initializeState(config, TimeArrivalMgr)
     state.servers = cell(1, config.numQueue);
     for q=1:config.numQueue
         state.servers{q} = zeros(1, config.numServers(q)); % all servers are available
-    end
-
-    state.processedClients= zeros(1,config.numQueue);    
+    end  
     
     % specific for CASO BENZINAIO 
     state.waitingPump = cell(1,2) ; 
