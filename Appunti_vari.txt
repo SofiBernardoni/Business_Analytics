@@ -1,0 +1,25 @@
+tutto tonde tranne arrivalMode e serviceMode
+STATE:
+clock
+servers --> array di array, esterno: code; interno : server
+queue --> cell array di cell array ( quello interno --> entity/client)
+lengthQueue --> vec lungo quanto il num di code 
+lostClient --> bool (default = false)
+processedClients --> vec lungo quanto num code (count)
+list_events --> lista degli eventi futuri
+lastLengthUpdate --> vec lungo quanto num code 
+
+waitingPump --> cell array lungo 2 a = pos 1 ; c = pos 2
+
+EVENTO:
+queue --> di appartenenza 
+server --> lo metti solo quando scheduli endService
+clock
+type
+
+ogni tanto dentro c'è : ENTITY/CLIENT: 
+			preference ???
+			pump --> 1 2 3 4 
+			
+			timeQueueArrival --> vec con gli ingressi in ogni coda 
+			WaitingQueueTime --> vec con tempo di attesa in ogni coda 
