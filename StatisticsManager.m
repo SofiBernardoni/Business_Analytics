@@ -48,7 +48,7 @@ classdef StatisticsManager < handle
 
         end
 
-        function clean(obj)
+        function clean(obj,numQueue)
             obj.LostClients= zeros(1,numQueue);
             obj.SumLength = zeros(1,numQueue);
             obj.SumWaitingTime= zeros(1,numQueue);
