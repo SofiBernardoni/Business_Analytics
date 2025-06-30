@@ -1,11 +1,11 @@
 % simulation - state.dipendent, nonhomogeneous
 
-n_sim=10;
-StopNumber = 300;
+n_sim=1000;
+StopNumber = 900;
 numQueue= 1;
 numServers= [3];
-%min_balking=[10];
-max_length=[2];
+min_balking=[10];
+max_length=[20];
 arrivalRate=[3];
 serviceRate=[1];
 
