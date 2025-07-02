@@ -1,4 +1,8 @@
 % simulation - state.dipendent, nonhomogeneous
+%simulazione di una coda con balking, arrivi con processo non omogeneo di
+%poisson e tempi di servizi state-dipendent
+
+% CAPIRE SE METTERE NORMFIT
 
 n_sim=1000;
 StopNumber = 900;
@@ -17,8 +21,7 @@ LostClients_all = zeros(numQueue, n_sim);
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber,numQueue, numServers);
 configuration.assignTimes({{'nonhomogeneous_poisson',  @(t) 1 + sin(t)}},{{'state.dipendent', @(state) 1/state}});
-%configuration.assignBalking([1],min_balking(1), max_length(1));
-configuration.assignBalking([1],max_length(1), max_length(1));
+configuration.assignBalking([1],min_balking(1), max_length(1));
 
 EventMgr= EventManager(configuration); % Creating Event Manager
 StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manager
@@ -41,7 +44,7 @@ alpha = 0.05;
 z = norminv(1 - alpha/2); 
 
 % -- Average Waiting Time --
-mean_AverageWaitingTime = mean(AverageWaitingTime_all, 2);       % [numQueue x 1]
+mean_AverageWaitingTime = mean(AverageWaitingTime_all, 2);      
 std_AverageWaitingTime = std(AverageWaitingTime_all, 0, 2);
 ci_AverageWaitingTime = z * std_AverageWaitingTime / sqrt(n_sim);
 
@@ -57,13 +60,10 @@ ci_AverageLength = z * std_AverageLength / sqrt(n_sim);
 
 % -- Lost Clients --
 mean_LostClients = mean(LostClients_all, 2);
-std_LostClients = std(LostClients_all, 0, 2);
-ci_LostClients = z * std_LostClients / sqrt(n_sim);
-
 
 for q = 1:numQueue
     fprintf('\nCoda %d:\n', q);
-    fprintf('  Lost Clients       = %.2f ± %.2f\n', mean_LostClients(q), ci_LostClients(q));
+    fprintf('  Lost Clients       = %.2f \n', mean_LostClients(q));
     fprintf('  Average Length     = %.2f ± %.2f\n', mean_AverageLength(q), ci_AverageLength(q));
     fprintf('  Average Wait Time  = %.2f ± %.2f\n', mean_AverageWaitingTime(q), ci_AverageWaitingTime(q));
     fprintf('  Average Total Time = %.2f ± %.2f\n', mean_AverageTotalTime(q), ci_AverageTotalTime(q));

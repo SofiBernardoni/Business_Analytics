@@ -1,4 +1,8 @@
 % SIMULATION EXAMPLE: benzinaio
+%caso Benziaio: da fare la simulazione con ripetizioni e calcolare media e
+%intervalli di confidenza. vedere se cambiare i parametri 
+
+
 clear all
 rng(1234)
 

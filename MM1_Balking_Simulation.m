@@ -1,5 +1,7 @@
 % SIMULATION EXAMPLE: M/M/1 queue with balking
 
+% DA METTERE I RISULTATI FINALI E FARE LA SIMUAZIONE CON RIPETIZIONI
+
 StopNumber = 200;
 numQueue= 1;
 numServers= [1];
