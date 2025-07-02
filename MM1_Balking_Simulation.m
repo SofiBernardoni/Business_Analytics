@@ -1,6 +1,6 @@
 % SIMULATION EXAMPLE: M/M/1 queue with balking and multiple repetitions
 
-StopNumber = 200;
+StopNumber = 500;
 numQueue = 1;
 numServers = [1];
 min_balking = 10;
