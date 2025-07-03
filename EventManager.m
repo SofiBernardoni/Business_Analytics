@@ -31,7 +31,6 @@ classdef EventManager < handle
         function obj = EventManager(config)
             % Class constructor
             % Initializing to a null default
-            %obj.currentEventHandler = @(,) disp('Nessun handler evento impostato');
             for i=1:config.numQueue
                 obj.TimeArrivalMgr{i} = TimeGenerator(config.arrivalMode{i}{:});
                 obj.TimeServiceMgr{i} = TimeGenerator(config.serviceMode{i}{:});
@@ -40,6 +39,7 @@ classdef EventManager < handle
         end
 
         function [state,fail] = checkAdmission(obj,id_queue, entity,state, config)
+            % Function that checks if entity can access server
             fail=true;
             if config.preference(id_queue)
                 comp_servers= obj.access_compatible_servers(entity.preference);
@@ -56,7 +56,8 @@ classdef EventManager < handle
         end
 
         function [state, newEvent] = enterService(obj,entity,state, id_queue, config)
-        
+            % Function that manages the entity accessing the service
+
             if config.preference(id_queue)
                 comp_servers= obj.compatible_servers(entity.preference);
             else
@@ -90,6 +91,7 @@ classdef EventManager < handle
 
         
         function [state, newEvents]= handleArrival(obj,state, event, config)
+            % Function that handles 'arrivo' events
 
             newEvents={};
             
@@ -145,6 +147,7 @@ classdef EventManager < handle
         end
 
         function [state, newEvents]= handleEndService(obj,state, event, config)
+            % Function that handles 'fine_servizio' events
             state.processedClients(event.queue)= state.processedClients(event.queue)+1;
             newEvents={};
             state.servers{event.queue}(event.server)= 0; %server again available
@@ -167,7 +170,7 @@ classdef EventManager < handle
 
 
         function currentEvent= handleEvent(obj, eventType)
-            % handleEvent takes the event type as an input argument
+            % handleEvent takes the event type as an input argument and gives back the correct handling function
             switch eventType
                 case 'arrivo'
                     currentEvent= @obj.handleArrival; 

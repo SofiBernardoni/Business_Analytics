@@ -8,7 +8,6 @@ classdef EventUtils
             Events{end+1} = newEvent;
             clockVals = cellfun(@(e) e.clock, Events);
             [~, idx] = sort(clockVals);
-            %[~, idx] = sort([Events.clock]);
             Events = Events(idx);
         end
 
@@ -18,9 +17,8 @@ classdef EventUtils
             Events(1) = [];
         end
         
-        % vedi se inserire data in struct
         function event = scheduleEvent(clock, type, queue, client, server)
-            % Creates new event (struct: clock, type, queue_id, server_id )
+            % Creates new event (struct: clock, type, queue_id, entity, server_id )
             if nargin < 5
                 server = '';  % default value for arrival events (in order to have every event with the same structure and put them in a list)
             end
