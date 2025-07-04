@@ -21,6 +21,7 @@ classdef StatisticsManager < handle
             
         end 
 
+        % Function that updates the variables used to compute the statistics at the end
         function state = update(obj,state,event)
             % Update SumLength
             obj.SumLength(event.queue) = obj.SumLength(event.queue) + state.lengthQueue(event.queue)*(state.clock-state.lastLengthUpdate(event.queue));
@@ -48,6 +49,7 @@ classdef StatisticsManager < handle
 
         end
 
+        %Function that clears all statistics
         function clean(obj,numQueue)
             obj.LostClients= zeros(1,numQueue);
             obj.SumLength = zeros(1,numQueue);
@@ -58,7 +60,8 @@ classdef StatisticsManager < handle
             obj.AverageTotalTime = zeros(1, numQueue);
 
         end
-
+        
+        %Function that computes final statistics and (if requested) prints them
         function obj=finalEvaluation(obj,print_stat, final_clock, processedClients)
             obj.AverageLength = obj.SumLength / final_clock;
             obj.AverageWaitingTime = obj.SumWaitingTime ./ processedClients;

@@ -1,14 +1,14 @@
 function [state] = initializeState(config, TimeArrivalMgr)
-    % what's in state
+    % what's in state:
     % clock
-    % servers --> array di array, esterno: code; interno : server
-    % queue --> cell array di cell array ( quello interno --> entity/client)
-    % lengthQueue --> vec lungo quanto il num di code 
+    % servers --> array of arrays, esternal: queues; internal : server
+    % queue --> cell array made of cell arrays ( internal one --> entity/client)
+    % lengthQueue --> vector of length=NumQueue 
     % lostClient --> bool (default = false)
-    % processedClients --> vec lungo quanto num code (count)
-    % list_events --> lista degli eventi futuri
-    % lastLengthUpdate --> vec lungo quanto num code 
-    
+    % processedClients --> vector of length=NumQueue (count)
+    % list_events --> list of future events
+    % lastLengthUpdate --> vector of length=NumQueue 
+    % For the specific BENZINAIO case:
     % waitingPump --> cell array lungo 2 a = pos 1 ; c = pos 2
 
     state.clock = 0;
@@ -17,9 +17,8 @@ function [state] = initializeState(config, TimeArrivalMgr)
     
     % Generate first events : first arrivals in queues with independent arrivals
     state.list_events = {};
-    %newEvents=[];
-    %state.list_events= struct('clock',{}, 'type',{}, 'queue', {}, 'client', {}, 'server',{});
     newEvents={};
+    
     for q=1:config.numQueue
         if config.independentArrivalQueue(q)
             first_client=struct('timeQueueArrival',zeros(1,config.numQueue), 'WaitingQueueTime',zeros(1,config.numQueue));

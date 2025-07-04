@@ -18,13 +18,12 @@ classdef SimulationManager < handle
         
         % Function performing the simulation and evaluating the statistics
         function obj=SimulateEvents(obj, config) 
-            % Args:
             % config = Config struct with simulation configuration parameters (StopNumber: stopping criterion, more specific stuff... )
 
             % Initialization
             state = initializeState(config, obj.EventMgr.TimeArrivalMgr); % da definire (struct/classe) % STRUTTURA DIVERSA IN BASE AL CONTESTO (DA PERSONALIZZARE IN SOTTOCLASSE CON INITALIZE STATE)
-            % metteri time e lista degli eventi futuri
-
+            
+            % Simulation
             count=0; 
             while count <= config.StopNumber
                 
@@ -39,7 +38,7 @@ classdef SimulationManager < handle
                     state.list_events = EventUtils.insertEvents(state.list_events, newEvents{e}); 
                 end
                 state = obj.StatMgr.update(state,event);
-                count= obj.StatMgr.stopCount(state)
+                count= obj.StatMgr.stopCount(state);
 
             end
 
