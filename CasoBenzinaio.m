@@ -28,7 +28,7 @@ for k = 1:numRepetitions
     configuration= configuration.assignTimes({{'iid', 'exponential',arrivalRate1},{}},{{'iid', 'exponential', serviceRate1},{'iid', 'exponential',serviceRate2}});
     configuration=configuration.assignDependencies([2], [1], [2]);
     configuration=configuration.assignPreferences([1], minPref, maxPref );
-    configuration=configuration.assignBalking([1], [maxLength], [maxLength] );
+    configuration = assignBalking(configuration, [1], maxLength, maxLength);
     
     EventMgr= EventManagerBenzinaio(configuration); % Creating Event Manager
     StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manager

@@ -34,7 +34,8 @@ LostClients_all = zeros(numQueue, n_sim);
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber,numQueue, numServers);
 configuration.assignTimes({{'iid', 'exponential',arrivalRateExp(1)}, {'iid', 'gamma',arrivalGamma}, {'iid', 'uniform', arrivalUnif}},{{'iid', 'exponential',serviceRate(1)}, {'iid', 'exponential',serviceRate(2)}, {'iid', 'exponential',serviceRate(3)}});
-configuration.assignBalking([1 2 3], max_length, max_length);
+%configuration.assignBalking([1 2 3], max_length, max_length);
+configuration = assignBalking(configuration, [1 2 3], max_length, max_length);
 
 EventMgr= EventManager(configuration); % Creating Event Manager
 StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manager
@@ -102,7 +103,7 @@ LostClients_all = zeros(numQueue, n_sim);
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber,numQueue, numServers);
 configuration.assignTimes({{'iid', 'exponential',arrivalRateExp(1)}, {'iid', 'gamma',arrivalGamma}, {'iid', 'uniform', arrivalUnif}},{{'iid', 'exponential',serviceRate(1)}, {'iid', 'exponential',serviceRate(2)}, {'iid', 'exponential',serviceRate(3)}});
-configuration.assignBalking([1 2 3], max_length, max_length);
+configuration = assignBalking(configuration, [1 2 3], max_length, max_length);
 
 EventMgr= EventManager(configuration); % Creating Event Manager
 StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manager
