@@ -22,14 +22,15 @@ LostClients = zeros(1, n_sim);
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber, numQueue, numServers);
 configuration.assignTimes({{'iid', 'exponential', arrivalRate}},{{'iid', 'exponential', serviceRate}});
-configuration.assignBalking([1], min_balking, max_length);
+configuration = assignBalking(configuration, [1], min_balking, max_length);
 
 EventMgr= EventManager(configuration); % Creating Event Manager
 StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manager
 SimMgr=SimulationManager(StatMgr, EventMgr); % Creating Simulation Manager
 
 for k = 1:n_sim
-
+    
+    SimMgr.print_stat=false;
     SimMgr.SimulateEvents(configuration);
 
     % Store statistics
@@ -69,8 +70,3 @@ fprintf('  Lost Clients       = %.2f ± %.2f\n', mean_LostClients, ci_LostClient
 fprintf('  Average Length     = %.2f ± %.2f\n', mean_AverageLength, ci_AverageLength);
 fprintf('  Average Wait Time  = %.2f ± %.2f\n', mean_AverageWaitingTime, ci_AverageWaitingTime);
 fprintf('  Average Total Time = %.2f ± %.2f\n', mean_AverageTotalTime, ci_AverageTotalTime);
-
-% Calcolo medie e deviazioni standard sui risultati
-%fprintf('Tempo medio di attesa: %.2f ± %.2f\n', mean(AverageWaitingTime), std(AverageWaitingTime));
-%fprintf('Lunghezza media della coda: %.2f ± %.2f\n', mean(AverageLength), std(AverageLength));
-%fprintf('Clienti che hanno rinunciato (balked): %.2f ± %.2f\n', mean(LostClients), std(LostClients));
