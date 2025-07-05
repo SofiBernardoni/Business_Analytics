@@ -22,7 +22,7 @@ LostClients = zeros(1, n_sim);
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber, numQueue, numServers);
 configuration.assignTimes({{'iid', 'exponential', arrivalRate}},{{'iid', 'exponential', serviceRate}});
-configuration.assignBalking([1], min_balking, max_length);
+configuration = assignBalking(configuration, [1], min_balking, max_length);
 
 EventMgr= EventManager(configuration); % Creating Event Manager
 StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manager

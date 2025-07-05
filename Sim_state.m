@@ -21,7 +21,7 @@ LostClients_all = zeros(numQueue, n_sim);
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber,numQueue, numServers);
 configuration.assignTimes({{'nonhomogeneous_poisson',  @(t) 1 + sin(t)}},{{'state.dipendent', @(state) 1/state}});
-configuration.assignBalking([1],min_balking(1), max_length(1));
+configuration = assignBalking(configuration, [1], min_balking, max_length);
 
 EventMgr= EventManager(configuration); % Creating Event Manager
 StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manager
