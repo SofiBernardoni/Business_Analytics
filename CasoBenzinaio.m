@@ -21,24 +21,34 @@ numRepetitions = 100;
 meanWaitingTimes = zeros(1, numRepetitions);
 meanQueueLengths = zeros(1, numRepetitions);
 lostClients = zeros(1, numRepetitions);
+AverageserviceTime = zeros(1,numRepetitions);
+
+
+% Creating Config object with the configuration of the problem
+configuration = Config(StopNumber,numQueue, numServers);
+configuration= configuration.assignTimes({{'iid', 'exponential',arrivalRate1},{}},{{'iid', 'exponential', serviceRate1},{'iid', 'exponential',serviceRate2}});
+configuration=configuration.assignDependencies([2], [1], [2]);
+configuration=configuration.assignPreferences([1], minPref, maxPref );
+configuration = assignBalking(configuration, [1], maxLength, maxLength);
+
+
+EventMgr= EventManagerBenzinaio(configuration); % Creating Event Manager
+StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manager
+SimMgr = SimulationManager(StatMgr, EventMgr); % Creating Simulation Manager
+    
 
 for k = 1:numRepetitions
-    % Creating Config object with the configuration of the problem
-    configuration = Config(StopNumber,numQueue, numServers);
-    configuration= configuration.assignTimes({{'iid', 'exponential',arrivalRate1},{}},{{'iid', 'exponential', serviceRate1},{'iid', 'exponential',serviceRate2}});
-    configuration=configuration.assignDependencies([2], [1], [2]);
-    configuration=configuration.assignPreferences([1], minPref, maxPref );
-    configuration = assignBalking(configuration, [1], maxLength, maxLength);
     
-    EventMgr= EventManagerBenzinaio(configuration); % Creating Event Manager
-    StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manager
-    SimMgr=SimulationManager(StatMgr, EventMgr); % Creating Simulation Manager
     
     SimMgr.SimulateEvents(configuration);
 
-    meanWaitingTimes(k) = StatMgr.AverageWaitingTime(1);  
-    meanQueueLengths(k) = StatMgr.AverageLength(1);      
-    lostClients(k) = StatMgr.LostClients(1);     
+    meanWaitingTimes(:, k) = StatMgr.AverageWaitingTime(1);  
+    meanQueueLengths(:, k) = StatMgr.AverageLength(1);      
+    lostClients(:,k) = StatMgr.LostClients(1);     
+    AverageserviceTime(:,k) = StatMgr.AverageUtilization(1);  
+
+    StatMgr.clean(configuration.numQueue);
+
 
 end
 
@@ -52,6 +62,9 @@ stdQL = std(meanQueueLengths);
 mediaLost = mean(lostClients);
 stdLost = std(lostClients);
 
+mediaServer = mean(AverageserviceTime);
+stdServer = std(AverageserviceTime);
+
 % Intervallo di confidenza 95%
 confLevel = 0.95;
 alpha = 1 - confLevel;
@@ -60,8 +73,10 @@ z = norminv(1 - alpha/2);  % valore z per 95%
 ciWT = z * stdWT / sqrt(numRepetitions);
 ciQL = z * stdQL / sqrt(numRepetitions);
 ciLost = z * stdLost / sqrt(numRepetitions);
+ciServer = z * stdServer/ sqrt(numRepetitions);
 
 fprintf('Tempo medio attesa: %.4f ± %.4f\n', mediaWT, ciWT);
 fprintf('Lunghezza media coda: %.4f ± %.4f\n', mediaQL, ciQL);
 fprintf('Clienti persi (balked): %.2f ± %.2f\n', mediaLost, ciLost);
+fprintf('Media utilizzo server: %2f ± %.2f\n', mediaServer, ciServer );
 

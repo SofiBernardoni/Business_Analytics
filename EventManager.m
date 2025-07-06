@@ -77,8 +77,11 @@ classdef EventManager < handle
             end
         
             state.servers{id_queue}(s)=1; % server not avavilable anymore
-                        
+
             serviceTime = obj.TimeServiceMgr{id_queue}.sample(state.clock, state.lengthQueue(id_queue), []);
+
+            state.ServiceTime(id_queue) = serviceTime;
+
             
             % Simulate new end_service on the queue if it's independent
             if config.independentServiceQueue(id_queue)
