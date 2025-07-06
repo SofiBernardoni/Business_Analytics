@@ -43,7 +43,7 @@ classdef SimulationManager < handle
             end
 
             % Evaluate the simulation and print statistics if required
-            obj.StatMgr.finalEvaluation(obj.print_stat, state.clock, state.processedClients);
+            obj.StatMgr.finalEvaluation(obj.print_stat, state.clock, state.processedClients, config.numServers);
         end
         
     end

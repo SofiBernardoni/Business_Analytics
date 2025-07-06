@@ -19,7 +19,7 @@ classdef EventManager < handle
         end
         
         % Function that stores an event different from 'fine_servizio' on the queue(has to be defined when config.independentServiceQueue=false) 
-        function newEvent= dependentService(~,time,server,entity,id_queue)
+        function newEvent= dependentService(~,clock, serviceTime,server,entity,id_queue)
         end
 
         % Function called after 'fine_servizio' on the queue when sth else follows  (has to be defined when config.independentExitQueue=false) 
@@ -80,15 +80,15 @@ classdef EventManager < handle
 
             serviceTime = obj.TimeServiceMgr{id_queue}.sample(state.clock, state.lengthQueue(id_queue), []);
 
-            state.ServiceTime(id_queue) = serviceTime;
-
-            
             % Simulate new end_service on the queue if it's independent
             if config.independentServiceQueue(id_queue)
                newEvent = EventUtils.scheduleEvent(state.clock + serviceTime, 'fine_servizio', id_queue,entity,s);
+               newEvent.serviceTime = serviceTime;
             else
-               newEvent= obj.dependentService(state.clock + serviceTime,s,entity,id_queue); % metti in metodi astratti
+               newEvent= obj.dependentService(state.clock,serviceTime,s,entity,id_queue); % metti in metodi astratti
             end
+
+            
       
         end
 

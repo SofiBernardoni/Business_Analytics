@@ -47,7 +47,8 @@ classdef StatisticsManager < handle
                     obj.SumTotalTime(event.queue) = obj.SumTotalTime(event.queue) + (state.clock - event.client.timeQueueArrival(event.queue));
  
                     % Server Busy Time
-                    obj.ServerBusyTime(event.queue) = obj.ServerBusyTime(event.queue) + state.ServiceTime(event.queue);
+                    obj.ServerBusyTime(event.queue) = obj.ServerBusyTime(event.queue) + event.serviceTime;
+                                 
                 otherwise
                     error('EventManager:UnknownEventType', 'Unknown event type: %s', event.type);
             end
@@ -69,11 +70,11 @@ classdef StatisticsManager < handle
         end
         
         %Function that computes final statistics and (if requested) prints them
-        function obj=finalEvaluation(obj,print_stat, final_clock, processedClients)
+        function obj=finalEvaluation(obj,print_stat, final_clock, processedClients, numServers)
             obj.AverageLength = obj.SumLength / final_clock;
             obj.AverageWaitingTime = obj.SumWaitingTime ./ processedClients;
             obj.AverageTotalTime = obj.SumTotalTime ./ processedClients;
-            obj.AverageUtilization = obj.ServerBusyTime / final_clock;
+            obj.AverageUtilization = obj.ServerBusyTime ./ (final_clock*numServers);
             if print_stat
                 for q=1:length(obj.LostClients)
                     fprintf('Queue %d: Lost Clients = %d\n', q, obj.LostClients(q));
