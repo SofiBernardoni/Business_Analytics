@@ -21,7 +21,7 @@ classdef EventManagerBenzinaio < EventManager
             if id_queue==1
                 entity.timeQueueArrival(2) = clock+ serviceTime;
                 entity.pump=server; % associate the pump to the client
-                entity.pumpTimeService =serviceTime;
+                entity.pumpTimeService =serviceTime; % associate service time at the pump to the client (needed for statistic computation)
                 newEvent = EventUtils.scheduleEvent(clock + serviceTime, 'arrivo', 2,entity);
             else
                 error('EventManager:UnmatchedDependentServiceQueue', 'Queue: %s', id_queue);

@@ -81,7 +81,7 @@ classdef StatisticsManager < handle
                     fprintf('Queue %d: Average Length = %.2f\n', q, obj.AverageLength(q));
                     fprintf('Queue %d: Average Waiting Time = %.2f\n', q, obj.AverageWaitingTime(q));
                     fprintf('Queue %d: Average Total Time = %.2f\n', q, obj.AverageTotalTime(q));
-                    fprintf('Queue %d: Average Utilization = %.2f%%\n', q, obj.AverageUtilization(q) * 100);
+                    fprintf('Queue %d: Average Server Utilization = %.2f%%\n', q, obj.AverageUtilization(q) * 100);
                 end
             end
 
