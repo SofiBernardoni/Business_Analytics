@@ -28,6 +28,7 @@ StatMgr= StatisticsManager(configuration.numQueue); % Creating Statistics Manage
 SimMgr=SimulationManager(StatMgr, EventMgr); % Creating Simulation Manager
 
 for i=1:n_sim
+    SimMgr.print_stat=false;
     SimMgr.SimulateEvents(configuration);
 
     AverageWaitingTime_all(:, i) = StatMgr.AverageWaitingTime;

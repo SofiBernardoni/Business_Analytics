@@ -1,4 +1,6 @@
 % SIMULATION EXAMPLE: M/M/1 queue with balking
+clear all
+
 rng(123)
 
 % Number of repetitions of the simulation
@@ -10,7 +12,7 @@ numQueue = 1;
 numServers = [1];
 min_balking = 10;
 max_length = 15;
-arrivalRate = 3;
+arrivalRate = 1;
 serviceRate = 4;
 
 % Vectors of statistics
@@ -21,7 +23,7 @@ LostClients = zeros(1, n_sim);
 
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber, numQueue, numServers);
-configuration.assignTimes({{'iid', 'exponential', arrivalRate}},{{'iid', 'exponential', serviceRate}});
+configuration = configuration.assignTimes({{'iid', 'exponential', arrivalRate}},{{'iid', 'exponential', serviceRate}});
 configuration = assignBalking(configuration, [1], min_balking, max_length);
 
 EventMgr= EventManager(configuration); % Creating Event Manager
