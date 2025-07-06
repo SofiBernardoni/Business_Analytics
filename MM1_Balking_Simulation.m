@@ -20,6 +20,7 @@ AverageWaitingTime = zeros(1, n_sim);
 AverageTotalTime = zeros(1, n_sim);
 AverageLength= zeros(1, n_sim);
 LostClients = zeros(1, n_sim);
+ServerTime = zeros(1,n_sim);
 
 % Creating Config object with the configuration of the problem
 configuration = Config(StopNumber, numQueue, numServers);
@@ -40,6 +41,7 @@ for k = 1:n_sim
     AverageTotalTime(k) = StatMgr.AverageTotalTime(1);
     AverageLength(k) = StatMgr.AverageLength(1);
     LostClients(k) = StatMgr.LostClients(1); 
+    ServerTime(k) = StatMgr.AverageUtilization(1);
 
     StatMgr.clean(configuration.numQueue);
 
@@ -68,7 +70,13 @@ mean_LostClients = mean(LostClients);
 std_LostClients = std(LostClients); 
 ci_LostClients = z * std_LostClients / sqrt(n_sim);
 
+% -- Average Service Time --
+mean_ServerTime = mean(ServerTime);
+std_ServerTime = std(ServerTime ,0);
+ci_ServerTime = z * std_ServerTime  / sqrt(n_sim);
+
 fprintf('  Lost Clients       = %.2f ± %.2f\n', mean_LostClients, ci_LostClients);
 fprintf('  Average Length     = %.2f ± %.2f\n', mean_AverageLength, ci_AverageLength);
 fprintf('  Average Wait Time  = %.2f ± %.2f\n', mean_AverageWaitingTime, ci_AverageWaitingTime);
 fprintf('  Average Total Time = %.2f ± %.2f\n', mean_AverageTotalTime, ci_AverageTotalTime);
+fprintf('  Server Time Average  = %.2f ± %.2f\n', mean_ServerTime, ci_ServerTime);
