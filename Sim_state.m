@@ -75,5 +75,6 @@ for q = 1:numQueue
     fprintf('  Average Length     = %.2f ± %.2f\n', mean_AverageLength(q), ci_AverageLength(q));
     fprintf('  Average Wait Time  = %.2f ± %.2f\n', mean_AverageWaitingTime(q), ci_AverageWaitingTime(q));
     fprintf('  Average Total Time = %.2f ± %.2f\n', mean_AverageTotalTime(q), ci_AverageTotalTime(q));
-    fprintf('  Average Utilization = %.2f%% ± %.2f%%\n', 100 * mean_AverageUtilization(q), 100 * ci_AverageUtilization(q));
+    fprintf('  Average Utilization = %.4f ± %.4f\n', mean_AverageUtilization(q), ci_AverageUtilization(q));
+
 end
